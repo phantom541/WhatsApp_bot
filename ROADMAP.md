@@ -7,14 +7,14 @@ Follow these stages in order and test each before advancing.
 - [x] Modular command handler
 - [x] Player registration and profile
 - [x] Starter coins
-- [x] Starter dragon selection and ownership (implemented, not live-tested)
+- [x] Mandatory `_starthunt` starter selection and ownership (implemented, not live-tested)
 - [x] Dragon collection and inspection (implemented, not live-tested)
 - [ ] Test with a live WhatsApp account
 - [ ] Phone-number pairing
 - [ ] Permissions and moderation
 
 ## Phase 2: Progression
-- [ ] Hunting, combat, XP, leveling, inventory, shops
+- [ ] Hunting, combat, spawning, XP, leveling, inventory, shops (starter eligibility guard prepared)
 
 ## Phase 3: Multiplayer
 - [ ] PvP, trading, guilds, dragon cards
