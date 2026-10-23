@@ -7,8 +7,9 @@ Follow these stages in order and test each before advancing.
 - [x] Modular command handler
 - [x] Player registration and profile
 - [x] Starter coins
+- [x] Starter dragon selection and ownership (implemented, not live-tested)
+- [x] Dragon collection and inspection (implemented, not live-tested)
 - [ ] Test with a live WhatsApp account
-- [ ] Dragon starter selection and ownership
 - [ ] Phone-number pairing
 - [ ] Permissions and moderation
 
