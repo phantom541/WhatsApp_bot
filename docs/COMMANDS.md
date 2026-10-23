@@ -1,8 +1,8 @@
 # Commands
 
-Default prefix: `.` (change using `BOT_PREFIX`).
+Default prefix: `_` (change using `BOT_PREFIX`).
 
-- `.ping` checks connectivity.
-- `.menu` shows commands.
-- `.register` creates a profile with 100 starter coins.
-- `.profile` shows level, XP, coins and dragon count.
+- `_ping` checks connectivity.
+- `_menu` shows commands.
+- `_register` creates a profile with 100 starter coins.
+- `_profile` shows level, XP, coins and dragon count.
