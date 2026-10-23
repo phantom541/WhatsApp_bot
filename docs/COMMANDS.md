@@ -7,7 +7,9 @@ Default prefix: `_` (change using `BOT_PREFIX`).
 - `_profile` shows player progress.
 - `_classes` lists all seven dragon classes.
 - `_classes strike` displays known species in a class.
-- `_starter` shows seven starter class choices.
+- `_starthunt` starts the mandatory starter selection journey.\n- `_starter` shows seven starter class choices.
 - `_starter strike`, `_starter stoker`, `_starter boulder`, `_starter mystery`, `_starter tidal`, `_starter sharp`, or `_starter tracker` claims one free dragon.
 - `_dragons` lists your collection.
 - `_dragon 1` inspects the first dragon.
+
+Hunting, spawning and battles require a starter dragon. Without one, the bot directs players to `_starthunt`. These three gameplay commands are reserved but not implemented yet.
