@@ -1,16 +1,14 @@
-import { STARTERS, createStarter, describeDragon } from '../lib/dragons.js';
+import { DRAGON_CLASSES, createStarter, describeDragon } from '../lib/dragons.js';
 import { updateDatabase } from '../lib/database.js';
 export default {
   name: 'starter',
-  description: 'Choose a starter dragon: ember, tide, or gale',
+  description: 'Choose one of seven dragon classes',
   async execute({ sender, reply, prefix, args }) {
     const choice = args[0]?.toLowerCase();
-    if (!choice) {
-      return reply('🐉 *Choose your starter dragon*\n\n' +
-        Object.entries(STARTERS).map(([key, d]) => d.emoji + ' *' + key + '* - ' + d.species + ' (' + d.element + ')\nHP ' + d.baseHp + ' | ATK ' + d.attack + ' | DEF ' + d.defense + ' | SPD ' + d.speed).join('\n\n') +
-        '\n\nChoose using *' + prefix + 'starter ember*, *' + prefix + 'starter tide*, or *' + prefix + 'starter gale*.');
-    }
-    if (!STARTERS[choice]) return reply('Unknown starter. Use ' + prefix + 'starter to see your options.');
+    if (!choice) return reply('🐉 *Choose your starter class*\n\n' +
+      Object.entries(DRAGON_CLASSES).map(([key, d]) => d.emoji + ' *' + d.label + '* - ' + d.starter + '\n' + d.specialty + '\nHP ' + d.hp + ' | ATK ' + d.attack + ' | DEF ' + d.defense + ' | SPD ' + d.speed).join('\n\n') +
+      '\n\nChoose with *' + prefix + 'starter strike* (or another class). View species with *' + prefix + 'classes*.');
+    if (!DRAGON_CLASSES[choice]) return reply('Unknown class. Use ' + prefix + 'starter to see all seven.');
     const result = await updateDatabase(db => {
       const player = db.players[sender];
       if (!player) return { error: 'Register first with ' + prefix + 'register.' };
@@ -21,7 +19,6 @@ export default {
       player.starterClaimed = true;
       return { dragon };
     });
-    if (result.error) return reply(result.error);
-    return reply('🎉 *Starter dragon claimed!*\n\n' + describeDragon(result.dragon));
+    return reply(result.error || '🎉 *Starter dragon claimed!*\n\n' + describeDragon(result.dragon));
   }
 };
