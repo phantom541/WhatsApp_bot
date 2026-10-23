@@ -1,0 +1,1 @@
+export default { name: 'menu', description: 'Show commands', async execute({ reply, commands, prefix }) { await reply('🐉 *Dragon Bot*\n\n' + [...commands.values()].map(c => `${prefix}${c.name} - ${c.description}`).join('\n')); } };
