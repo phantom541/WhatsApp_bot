@@ -8,9 +8,13 @@ import dragon from '../commands/dragon.js';
 import classes from '../commands/classes.js';
 import starthunt from '../commands/starthunt.js';
 import starterdrgon from '../commands/starterdrgon.js';
+import hunt from '../commands/hunt.js';
+import battle from '../commands/battle.js';
+import flee from '../commands/flee.js';
+import rest from '../commands/rest.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon].map(c => [c.name, c]));
+const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
