@@ -7,6 +7,8 @@ export default {name:'unban',description:'Lift a bot ban',async execute({phone,r
  const result=await updateDatabase(db=>{
  staffState(db);if(roleRank(roleOf(db,phone))<1)return 'Bot moderator role required.';
  if(!db.botBans[target])return 'That number is not banned.';
+ const issuer=db.botBans[target].by;
+ if(roleRank(roleOf(db,phone))<roleRank(roleOf(db,issuer)))return 'Higher-ranked staff must lift this ban.';
  delete db.botBans[target];logStaff(db,phone,'unban',target);return '✅ Ban lifted.';
  });return reply(result);
 }};
