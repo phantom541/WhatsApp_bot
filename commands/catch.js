@@ -12,12 +12,14 @@ export default {name:'catch',requiresStarter:true,description:'Attempt a level-s
   if(!e)return {error:'No wild dragon. Use '+prefix+'hunt first.'};
   if(!name)return {battle:true,species:e.species};
   if(normalizeDragonName(name)!==normalizeDragonName(e.species))return {error:'The wild dragon is '+e.species+'. Use '+prefix+'catch '+e.species+'.'};
-  const chance=captureChance(e);
+  const rarityPenalty={Common:0,Uncommon:5,Rare:12,Epic:20,Legendary:30}[e.rarity]||0;
+  const chance=Math.max(3,captureChance(e)-rarityPenalty);
   e.captureTool=null;
   if(randomInt(100)>=chance)return {failed:true,chance};
   const d=createStarter(e.species);
   d.isStarter=false;d.tradable=true;d.level=e.level;
-  d.hp=d.maxHp=Math.max(30,24+e.level*9);
+  d.hp=d.maxHp=Math.max(30,e.maxHp||24+e.level*9);
+  d.rarity=e.rarity||'Common';
   const location=addDragon(p,d);
   const xp=winXp(e.level);
   p.xp=(p.xp||0)+xp;
