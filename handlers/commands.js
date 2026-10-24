@@ -32,14 +32,23 @@ import party from '../commands/party.js';
 import den from '../commands/den.js';
 import transfer from '../commands/transfer.js';
 import spawn from '../commands/spawn.js';
+import {readDatabase} from '../lib/database.js';
+import {roleOf,roleRank} from '../lib/roles.js';
 import {phoneFromMessage} from '../lib/identity.js';
 import daily from '../commands/daily.js';
 import staff from '../commands/staff.js';
 import quests from '../commands/quests.js';
 import claimquest from '../commands/claimquest.js';
+import ban from '../commands/ban.js';
+import unban from '../commands/unban.js';
+import botmode from '../commands/botmode.js';
+import grant from '../commands/grant.js';
+import staffspawn from '../commands/staffspawn.js';
+import staffperks from '../commands/staffperks.js';
+import stafflog from '../commands/stafflog.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest].map(c => [c.name, c]));
+const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
@@ -52,6 +61,11 @@ export async function handleMessage(sock, message) {
   const phone=phoneFromMessage(message);
   const reply = text => sock.sendMessage(jid, { text }, { quoted: message });
   try {
+    const db=await readDatabase();
+    const role=roleOf(db,phone);
+    if(phone&&db.botBans?.[phone]&&roleRank(role)===0)return reply('⛔ You are banned from Dragon Bot.');
+    const rescue=['botmode','staff','ban','unban','staffperks','stafflog'];
+    if(db.botSettings?.enabled===false&&!rescue.includes(name?.toLowerCase()))return reply('🔌 Dragon Bot game commands are paused by staff.');
     if (['hunt', 'spawn', 'battle'].includes(name?.toLowerCase()) || command?.requiresStarter) {
       if (!await requireStarter(sender, reply, config.prefix)) return;
     }
