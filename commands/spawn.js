@@ -1,9 +1,11 @@
+import staffspawn from './staffspawn.js';
 import {roleOf} from '../lib/roles.js';
 import {randomInt} from 'node:crypto';
 import {updateDatabase} from '../lib/database.js';
 import {ensureCollection} from '../lib/collection.js';
 import {generateWild,REGIONS} from '../lib/regions.js';
-export default {name:'spawn',requiresStarter:true,description:'Generate an extra wild dragon encounter',async execute({sender,reply,prefix,phone}){
+export default {name:'spawn',requiresStarter:true,description:'Generate an extra wild dragon encounter',async execute({sender,reply,prefix,phone,args}){
+ if(args?.length)return staffspawn.execute({sender,reply,prefix,phone,args});
  const r=await updateDatabase(db=>{
   const p=db.players[sender];ensureCollection(p);if(p.activeEncounter)return {error:'Finish your current encounter first.'};
   if(p.pendingRecruit)return {error:'Recruit your defeated dragon first.'};
