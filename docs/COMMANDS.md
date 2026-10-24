@@ -23,3 +23,18 @@ Only one free starter can be claimed. Starters are marked `isStarter: true`, `tr
 - `_rest` restores dragon HP outside combat (5-minute rest cooldown).
 
 This is an initial combat prototype; capture, items, PvP, and balancing remain future work.
+
+## Combat and capture update
+- `_hunt` finds a wild encounter.
+- `_catch <dragon-name>` attempts to capture the encountered species. Higher-level dragons are harder to catch; successful catches award victory-equivalent XP and auto-place the dragon in party (six slots) or den.
+- `_catch` without a name enters the battle menu.
+- `_battle` lists actions; `_battle fight` lists four equipped moves; `_battle item` points to the bag.
+- `_battlefight 2` uses move slot two and advances combat.
+- `_swap 2` switches to party slot two, ending the turn.
+- `_flee` forfeits without XP.
+- `_recruit party` or `_recruit den` collects a defeated wild dragon.
+- `_bag` shows inventory; item use is not implemented yet.
+- `_moves 1` shows the first dragon's moves and available replacements.
+- `_replacemove 1 2 Dragon Breath` replaces the second move permanently using a credit earned every ten levels, including level 100.
+
+XP scales with enemy level. Defeat grants a smaller XP award. Each dragon has sixteen possible moves, four equipped at a time, and cannot relearn a discarded move. Level cap is 100. Starter dragons remain non-tradable. Combat and capture mechanics require live testing and balancing.
