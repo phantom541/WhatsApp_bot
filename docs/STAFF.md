@@ -19,3 +19,11 @@ Each _grant operation is capped at 1,000,000 coins, and _grantitem is capped at 
 _daily gives role-scaled coins.
 _quests and _claimquest track the daily hunt, catch and victory goals.
 _profile shows player ID (WhatsApp name plus a short phone suffix) and masked phone.
+
+## Extra controls and test instructions
+- _spawn skrill is a bot-moderator-only shortcut for _staffspawn skrill.
+- Bot owners can use _staffdragon NUMBER species-name, _resetcooldown NUMBER, and all moderator tools.
+- The creator can use _forgedragon NUMBER LEVEL RARITY species-name, _setdragonlevel NUMBER INDEX LEVEL, and _setcoins NUMBER BALANCE.
+- Creator staff reassignment can directly promote moderators to owners or move owners to moderators. The configured creator cannot be removed through chat.
+- Bot bans also apply to moderator/owner accounts if imposed by a higher role, and lower ranks cannot overturn those bans.
+- Run npm test on the hosting machine to execute the moderation integration suite; this was added to package.json.
