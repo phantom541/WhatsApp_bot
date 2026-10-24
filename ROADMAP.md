@@ -14,7 +14,9 @@ Follow these stages in order and test each before advancing.
 - [ ] Permissions and moderation
 
 ## Phase 2: Progression
-- [ ] Hunting, combat, spawning, XP, leveling, inventory, shops (starter eligibility guard prepared)
+- [x] Basic wild encounters, PvE combat, dragon XP and levels (implemented, live testing pending)
+- [x] Fleeing and resting (implemented, live testing pending)
+- [ ] Spawning, inventory, shop, advanced progression and balancing
 
 ## Phase 3: Multiplayer
 - [ ] PvP, trading, guilds, dragon cards
