@@ -5,7 +5,7 @@ export default {name:'battle',requiresStarter:true,description:'Show battle acti
  const p=(await readDatabase()).players[sender];
  if(!p.activeEncounter)return reply('No active encounter. Use '+prefix+'hunt.');
  const action=(args[0]||'').toLowerCase();
- if(action==='item')return reply('🎒 Use '+prefix+'bag to view items. Battle item use is not yet available.');
+ if(action==='item')return reply('🎒 Use '+prefix+'bag to see supplies, then '+prefix+'use potion or '+prefix+'use guardtonic. Using an item ends your turn.');
  if(action==='fight'){
   const d=activeDragon(p);
   if(!d)return reply('No healthy dragon. Use '+prefix+'flee then '+prefix+'rest.');
