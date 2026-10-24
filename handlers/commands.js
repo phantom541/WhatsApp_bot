@@ -27,9 +27,10 @@ import use from '../commands/use.js';
 import prepare from '../commands/prepare.js';
 import regions from '../commands/regions.js';
 import travel from '../commands/travel.js';
+import evolve from '../commands/evolve.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel].map(c => [c.name, c]));
+const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
@@ -45,7 +46,7 @@ export async function handleMessage(sock, message) {
       if (!await requireStarter(sender, reply, config.prefix)) return;
     }
     if (!command) return reply('That feature is not available yet.');
-    await command.execute({ sender, reply, prefix: config.prefix, commands, args });
+    await command.execute({ sender, reply, prefix: config.prefix, commands, args, sock, message });
   }
   catch (error) { console.error('Command ' + name + ' failed:', error); await reply('That command failed. Please try again.'); }
 }
