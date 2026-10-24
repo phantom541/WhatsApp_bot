@@ -1,9 +1,10 @@
 import {randomInt} from 'node:crypto';
 import {updateDatabase} from '../lib/database.js';
+import {ensureCollection} from '../lib/collection.js';
 import {generateWild,REGIONS} from '../lib/regions.js';
 export default {name:'spawn',requiresStarter:true,description:'Generate an extra wild dragon encounter',async execute({sender,reply,prefix}){
  const r=await updateDatabase(db=>{
-  const p=db.players[sender];if(p.activeEncounter)return {error:'Finish your current encounter first.'};
+  const p=db.players[sender];ensureCollection(p);if(p.activeEncounter)return {error:'Finish your current encounter first.'};
   if(p.pendingRecruit)return {error:'Recruit your defeated dragon first.'};
   if(!p.dragons?.some(d=>p.party?.includes(d.id)&&d.hp>0))return {error:'No healthy party dragon.'};
   const cooldown=5*60*1000,wait=cooldown-(Date.now()-(p.lastSpawnAt||0));
