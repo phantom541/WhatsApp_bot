@@ -1,11 +1,15 @@
-# Game rules: initial draft
+# Game rules
 
-Players register once and receive 100 coins at level 1. Each player can claim one free starter dragon from seven classes: Strike, Stoker, Boulder, Mystery, Tidal, Sharp, and Tracker. Starter species are Skrill, Monstrous Nightmare, Gronckle, Hideous Zippleback, Thunderdrum, Razorwhip, and Deadly Nadder, respectively.
+Players register once and receive 100 coins at level 1. Starter selection is a three-stage process:
 
-Other species are listed in the class encyclopedia but are not yet collectible. Dragon battles, additional captures, trading, and evolution are future features. All stats are provisional gameplay values.
+1. `_starthunt` displays all seven classes and available starter species.
+2. `_starthunt --dragon-name` previews the chosen species, showing its class, ability, and provisional combat statistics.
+3. `_starterdrgon --dragon-name-choose` confirms the exact dragon last previewed and awards it once.
 
-Dragon classes and species names are inspired by How to Train Your Dragon; this is an unofficial fan project.
+Names can be written with hyphens or spaces for preview, and with hyphens for confirmation. Any species in the seven class lists can currently be selected. Each species uses its class's provisional battle stats.
 
-## Starter requirement
+A player may claim only one free starter. Starter dragons are permanently marked `isStarter: true` and `tradable: false`, with their ID stored as `starterDragonId` on the player. Trading must reject these dragons even if a player attempts to rename them or manipulate trade commands. The helper `isDragonTradable` exists for future trading implementation, but trading is not yet built.
 
-A registered player must run `_starthunt` before claiming a starter with `_starter <class>`. Players without a dragon cannot hunt, battle, or spawn dragons. They are directed to `_starthunt`. This is enforced by a reusable eligibility guard for future gameplay commands. Existing players with dragons keep their collection.
+Without a dragon, players cannot battle, spawn, or hunt; they are directed to `_starthunt`. Existing players with dragons retain them. Legacy starters acquired before these flags were introduced should be identified using player starter history / `starterDragonId` when trading is built.
+
+This is an unofficial fan project inspired by How to Train Your Dragon.
