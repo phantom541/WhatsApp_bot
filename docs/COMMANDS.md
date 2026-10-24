@@ -38,3 +38,12 @@ This is an initial combat prototype; capture, items, PvP, and balancing remain f
 - `_replacemove 1 2 Dragon Breath` replaces the second move permanently using a credit earned every ten levels, including level 100.
 
 XP scales with enemy level. Defeat grants a smaller XP award. Each dragon has sixteen possible moves, four equipped at a time, and cannot relearn a discarded move. Level cap is 100. Starter dragons remain non-tradable. Combat and capture mechanics require live testing and balancing.
+
+## Capture equipment
+- `_mart 3` shows seven capture supplies.
+- `_buy strongnet 1` purchases a supply.
+- `_hunt` finds an encounter.
+- `_prepare strongnet` consumes one Strong Net and adds 22 percentage points to the next catch attempt for that encounter.
+- `_catch skrill` attempts to catch the encountered Skrill; the prepared bonus is used once even on failure.
+- Capture bonuses: Basic Net +10, Strong Net +22, Master Net +40, Bait +8, Rare Bait +15, Sleep Dust +18, Calming Herb +12. Chance caps at 95%.
+- Only one prepared supply can be active per encounter. Catching without supplies still works. These supplies currently affect capture probability, not wild spawn rarity.
