@@ -1,0 +1,31 @@
+import {randomInt} from 'node:crypto';
+import {updateDatabase} from '../lib/database.js';
+import {createStarter,normalizeDragonName} from '../lib/dragons.js';
+import {addDragon} from '../lib/collection.js';
+import {winXp,awardXp} from '../lib/progression.js';
+import {activeDragon} from '../lib/collection.js';
+export default {name:'catch',requiresStarter:true,description:'Attempt a level-scaled catch or enter battle',async execute({sender,reply,args,prefix}){
+ const name=args.join(' ').trim();
+ const r=await updateDatabase(db=>{
+  const p=db.players[sender],e=p.activeEncounter;
+  if(!e)return {error:'No wild dragon. Use '+prefix+'hunt first.'};
+  if(!name)return {battle:true,species:e.species};
+  if(normalizeDragonName(name)!==normalizeDragonName(e.species))return {error:'The wild dragon is '+e.species+'. Use '+prefix+'catch '+e.species+'.'};
+  const chance=Math.max(8,Math.min(85,75-e.level*2));
+  if(randomInt(100)>=chance)return {failed:true,chance};
+  const d=createStarter(e.species);
+  d.isStarter=false;d.tradable=true;d.level=e.level;
+  d.hp=d.maxHp=Math.max(30,24+e.level*9);
+  const location=addDragon(p,d);
+  const xp=winXp(e.level);
+  p.xp=(p.xp||0)+xp;
+  const active=activeDragon(p);
+  const milestones=active?awardXp(active,xp):[];
+  p.activeEncounter=null;
+  return {caught:true,species:d.species,location,xp,chance,milestones};
+ });
+ if(r.error)return reply(r.error);
+ if(r.battle)return reply('⚔️ Battle with '+r.species+'! Use '+prefix+'battle fight to view your moves.');
+ if(r.failed)return reply('🐉 The dragon escaped the catch attempt! Catch chance: '+r.chance+'%. Try again or fight.');
+ return reply('🎉 Caught '+r.species+'! Sent to '+r.location+'. +'+r.xp+' XP.'+(r.milestones.length?' Move swap unlocked!':''));
+}};
