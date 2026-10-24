@@ -32,9 +32,14 @@ import party from '../commands/party.js';
 import den from '../commands/den.js';
 import transfer from '../commands/transfer.js';
 import spawn from '../commands/spawn.js';
+import {phoneFromMessage} from '../lib/identity.js';
+import daily from '../commands/daily.js';
+import staff from '../commands/staff.js';
+import quests from '../commands/quests.js';
+import claimquest from '../commands/claimquest.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn].map(c => [c.name, c]));
+const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
@@ -44,13 +49,14 @@ export async function handleMessage(sock, message) {
   if (!command && !['hunt', 'spawn', 'battle'].includes(name?.toLowerCase())) return;
   const jid = message.key.remoteJid;
   const sender = message.key.participant || jid;
+  const phone=phoneFromMessage(message);
   const reply = text => sock.sendMessage(jid, { text }, { quoted: message });
   try {
     if (['hunt', 'spawn', 'battle'].includes(name?.toLowerCase()) || command?.requiresStarter) {
       if (!await requireStarter(sender, reply, config.prefix)) return;
     }
     if (!command) return reply('That feature is not available yet.');
-    await command.execute({ sender, reply, prefix: config.prefix, commands, args, sock, message });
+    await command.execute({ sender, reply, prefix: config.prefix, commands, args, sock, message, phone });
   }
   catch (error) { console.error('Command ' + name + ' failed:', error); await reply('That command failed. Please try again.'); }
 }
