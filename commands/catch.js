@@ -1,3 +1,4 @@
+import {recordQuest} from '../lib/quests.js';
 import {captureChance} from '../lib/capture.js';
 import {randomInt} from 'node:crypto';
 import {updateDatabase} from '../lib/database.js';
@@ -26,6 +27,7 @@ export default {name:'catch',requiresStarter:true,description:'Attempt a level-s
   const active=activeDragon(p);
   const milestones=active?awardXp(active,xp):[];
   p.activeEncounter=null;
+  recordQuest(p,'catch');
   return {caught:true,species:d.species,location,xp,chance,milestones};
  });
  if(r.error)return reply(r.error);
