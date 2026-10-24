@@ -55,3 +55,18 @@ XP scales with enemy level. Defeat grants a smaller XP award. Each dragon has si
 - Rarities: Common, Uncommon, Rare, Epic, Legendary. Higher rarities have stronger wild stats and lower capture odds.
 - Buying Rare Bait and holding it in inventory consumes one on the next hunt, improving the odds of a rarer encounter.
 - `_prepare strongnet` still improves catch chance.
+
+## Region permissions, complete Mart and Shop, and collection
+- Normal players receive a fresh random region on every _hunt and _spawn.
+- In a WhatsApp group, admins and superadmins can override their own region via _travel forest; _travel random removes the override.
+- Bot owners can use _travel anywhere when their international numbers are set in the BOT_OWNER_NUMBERS environment variable (comma separated, no plus signs).
+- _mart 1 through _mart 7 show 49 items; _shop shows 4 charms; _buy <id> [quantity] purchases them.
+- _use <id> [dragon collection index] heals, revives, applies temporary battle tonics, or uses training materials and certain rare treasures.
+- _prepare <capture id> uses a capture modifier against the active wild dragon.
+- Rare Bait in the bag automatically improves the next _hunt rarity roll and is consumed. It can alternatively be prepared as a capture modifier.
+- _evolve <collection index> <stone id> consumes a compatible stone and permanently ascends a dragon at levels 10, 30 and 60; max stage 3.
+- _equipcharm <collection index> <charm id> equips purchased Power, Guard, Swift or Wisdom charms. _equipcharm 1 none removes one. You need one owned copy per simultaneously equipped dragon.
+- _party, _den and _transfer <collection index> party|den manage the six-slot party.
+- _regions shows the seven random hunting locations.
+- _spawn creates an extra personal wild encounter, with a separate five-minute cooldown.
+- Moves remain permanently replaceable only through the established level milestones, not through training items.
