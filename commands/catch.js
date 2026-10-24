@@ -1,3 +1,4 @@
+import {captureChance} from '../lib/capture.js';
 import {randomInt} from 'node:crypto';
 import {updateDatabase} from '../lib/database.js';
 import {createStarter,normalizeDragonName} from '../lib/dragons.js';
@@ -11,7 +12,8 @@ export default {name:'catch',requiresStarter:true,description:'Attempt a level-s
   if(!e)return {error:'No wild dragon. Use '+prefix+'hunt first.'};
   if(!name)return {battle:true,species:e.species};
   if(normalizeDragonName(name)!==normalizeDragonName(e.species))return {error:'The wild dragon is '+e.species+'. Use '+prefix+'catch '+e.species+'.'};
-  const chance=Math.max(8,Math.min(85,75-e.level*2));
+  const chance=captureChance(e);
+  e.captureTool=null;
   if(randomInt(100)>=chance)return {failed:true,chance};
   const d=createStarter(e.species);
   d.isStarter=false;d.tradable=true;d.level=e.level;
