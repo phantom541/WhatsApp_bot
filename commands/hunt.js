@@ -10,7 +10,7 @@ export default {
       const now = Date.now();
       const wait = HUNT_COOLDOWN_MS - (now - (p.lastHuntAt || 0));
       if (wait > 0) return { wait: Math.ceil(wait / 1000) };
-      if (!p.dragons.some(d => d.hp > 0)) return { error: 'Your dragons are exhausted. Healing will be added in a later update.' };
+      if (!p.dragons.some(d => d.hp > 0)) return { error: 'Your dragons are exhausted. Use _rest or a revive to recover.' };
       p.activeEncounter = createEncounter();
       p.lastHuntAt = now;
       return { encounter: p.activeEncounter };
@@ -18,6 +18,6 @@ export default {
     if (result.error) return reply(result.error);
     if (result.wait) return reply('⏳ Wait ' + result.wait + ' seconds before hunting again.');
     const e = result.encounter || result.existing;
-    return reply('🌲 *Wild dragon encountered!*\n' + e.emoji + ' ' + e.species + ' | ' + e.dragonClass + ' Class\nLevel: ' + e.level + ' | HP: ' + e.hp + '\n\nUse *' + prefix + 'catch ' + e.species.toLowerCase().replace(/\s+/g, '-') + '* to catch, *' + prefix + 'catch* to battle, or *' + prefix + 'flee* to leave.');
+    return reply('🌲 *Wild dragon encountered!*\n' + e.emoji + ' ' + e.species + ' | ' + e.dragonClass + ' Class\nLevel: ' + e.level + ' | HP: ' + e.hp + '\n\nUse *' + prefix + 'catch ' + e.species.toLowerCase().replace(/\s+/g, '-') + '* to catch, *' + prefix + 'catch* to battle, use *' + prefix + 'prepare strongnet* for capture supplies, or *' + prefix + 'flee* to leave.');
   }
 };
