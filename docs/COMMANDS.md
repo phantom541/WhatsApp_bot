@@ -47,3 +47,11 @@ XP scales with enemy level. Defeat grants a smaller XP award. Each dragon has si
 - `_catch skrill` attempts to catch the encountered Skrill; the prepared bonus is used once even on failure.
 - Capture bonuses: Basic Net +10, Strong Net +22, Master Net +40, Bait +8, Rare Bait +15, Sleep Dust +18, Calming Herb +12. Chance caps at 95%.
 - Only one prepared supply can be active per encounter. Catching without supplies still works. These supplies currently affect capture probability, not wild spawn rarity.
+
+## Hunting regions and rarity
+- `_regions` lists seven hunting regions.
+- `_travel forest` selects a region outside encounters.
+- `_hunt` finds wild dragons with level ranges determined by the selected region.
+- Rarities: Common, Uncommon, Rare, Epic, Legendary. Higher rarities have stronger wild stats and lower capture odds.
+- Buying Rare Bait and holding it in inventory consumes one on the next hunt, improving the odds of a rarer encounter.
+- `_prepare strongnet` still improves catch chance.
