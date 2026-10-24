@@ -1,5 +1,6 @@
 import {updateDatabase} from '../lib/database.js';
 import {roleOf,roleRank,ensureRoles} from '../lib/roles.js';
+import {logStaff} from '../lib/admin.js';
 import {phoneDigits} from '../lib/identity.js';
 export default {name:'staff',description:'Manage bot staff',async execute({phone,reply,args,prefix}){
  const action=args[0],kind=args[1],target=phoneDigits(args[2]);
@@ -20,6 +21,7 @@ export default {name:'staff',description:'Manage bot staff',async execute({phone
  if(index<0)return 'Role not found.';
  list.splice(index,1);
  }
+ logStaff(db,phone,'staff '+action,kind+' '+target);
  return 'Staff role updated.';
  });
  return reply(result);
