@@ -10,7 +10,8 @@ export default {name:'recruit',requiresStarter:true,description:'Send a defeated
   const d=createStarter(e.species);
   if(!d)return {error:'Unknown dragon species.'};
   d.isStarter=false;d.tradable=true;d.level=e.level;
-  d.hp=d.maxHp=Math.max(1,e.maxHp||e.hp||30);
+  d.hp=d.maxHp=Math.max(30,e.maxHp||24+e.level*9);
+  d.rarity=e.rarity||'Common';
   const location=addDragon(p,d,choice);
   p.pendingRecruit=null;
   return {species:d.species,location};
