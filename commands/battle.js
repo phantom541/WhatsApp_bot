@@ -1,17 +1,16 @@
-import { updateDatabase } from '../lib/database.js';
-import { resolveBattle } from '../lib/hunting.js';
-export default {
-  name: 'battle', requiresStarter: true, description: 'Fight your current wild encounter',
-  async execute({ sender, reply, prefix }) {
-    const result = await updateDatabase(db => {
-      const p = db.players[sender];
-      if (!p.activeEncounter) return { error: 'No active encounter. Use ' + prefix + 'hunt first.' };
-      const species = p.activeEncounter.species;
-      return { species, ...resolveBattle(p, p.activeEncounter) };
-    });
-    if (result.error) return reply(result.error);
-    if (result.victory) return reply('🏆 *Victory against ' + result.species + '!*\nDamage: ' + result.damage + '\n+' + result.coins + ' coins | +' + result.xp + ' XP\nYour dragon is now level ' + result.dragon.level + '.');
-    if (result.defeated) return reply('💤 Your dragon was exhausted fighting ' + result.species + '. Encounter ended. Healing is coming in a later update.');
-    return reply('⚔️ You dealt ' + result.damage + ' damage to ' + result.species + '.\nThe wild dragon dealt ' + result.incoming + ' damage back.\nEnemy HP: ' + result.enemyRemaining + '\nYour dragon HP: ' + result.dragon.hp + '\n\nUse *' + prefix + 'battle* again or *' + prefix + 'flee*.');
-  }
-};
+import {readDatabase} from '../lib/database.js';
+import {activeDragon} from '../lib/collection.js';
+import {ensureMoves} from '../lib/moves.js';
+export default {name:'battle',requiresStarter:true,description:'Show battle actions or moves/items',async execute({sender,reply,args,prefix}){
+ const p=(await readDatabase()).players[sender];
+ if(!p.activeEncounter)return reply('No active encounter. Use '+prefix+'hunt.');
+ const action=(args[0]||'').toLowerCase();
+ if(action==='item')return reply('🎒 Use '+prefix+'bag to view items. Battle item use is not yet available.');
+ if(action==='fight'){
+  const d=activeDragon(p);
+  if(!d)return reply('No healthy dragon. Use '+prefix+'flee then '+prefix+'rest.');
+  ensureMoves(d);
+  return reply('⚔️ *'+d.species+' moves*\n'+d.moves.map((m,i)=>(i+1)+'. '+m.name+' (Power '+m.power+')').join('\n')+'\n\nUse '+prefix+'battlefight 2');
+ }
+ return reply('⚔️ *Battle options*\n'+prefix+'battle fight - show moves\n'+prefix+'battle item - view bag\n'+prefix+'flee - forfeit\n'+prefix+'swap 2 - swap dragons (ends turn)');
+}};
