@@ -15,7 +15,11 @@ export default {name:'staff',description:'Manage bot staff',async execute({phone
  const list=kind==='mod'?db.botMods:db.botOwners;
  const index=list.indexOf(target);
  if(action==='add'){
- if(other!=='player')return 'User already has a staff role.';
+ if(other!=='player'){
+  if(actor==='creator'&&other==='mod'&&kind==='owner')db.botMods=db.botMods.filter(x=>x!==target);
+  else if(actor==='creator'&&other==='owner'&&kind==='mod')db.botOwners=db.botOwners.filter(x=>x!==target);
+  else return 'User already has a staff role.';
+ }
  list.push(target);
  }else{
  if(index<0)return 'Role not found.';
