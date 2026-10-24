@@ -2,6 +2,7 @@ import { updateDatabase } from '../lib/database.js';
 import { HUNT_COOLDOWN_MS } from '../lib/hunting.js';
 import {randomInt} from 'node:crypto';
 import {generateWild,REGIONS} from '../lib/regions.js';
+import {recordQuest} from '../lib/quests.js';
 import {ensureCollection} from '../lib/collection.js';
 import {consumeItem,inventoryCount} from '../lib/items.js';
 export default {
@@ -21,6 +22,7 @@ export default {
       if(rareBoost)consumeItem(p,'rarebait');
       p.activeEncounter = generateWild(region,rareBoost);
       p.lastHuntAt = now;
+      recordQuest(p,'hunt');
       return { encounter: p.activeEncounter };
     });
     if (result.error) return reply(result.error);
