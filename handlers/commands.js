@@ -12,9 +12,16 @@ import hunt from '../commands/hunt.js';
 import battle from '../commands/battle.js';
 import flee from '../commands/flee.js';
 import rest from '../commands/rest.js';
+import catchDragon from '../commands/catch.js';
+import battlefight from '../commands/battlefight.js';
+import recruit from '../commands/recruit.js';
+import swap from '../commands/swap.js';
+import bag from '../commands/bag.js';
+import moves from '../commands/moves.js';
+import replacemove from '../commands/replacemove.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest].map(c => [c.name, c]));
+const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
