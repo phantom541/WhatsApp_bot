@@ -1,4 +1,5 @@
 import { updateDatabase } from '../lib/database.js';
+import { addDragon } from '../lib/collection.js';
 import { createStarter, findStarterSpecies, describeDragon, normalizeDragonName } from '../lib/dragons.js';
 export default {
   name: 'starterdrgon', description: 'Confirm a previewed starter: --dragon-name-choose',
@@ -16,7 +17,7 @@ export default {
       if (!player.starterSelectionActive || !player.pendingStarter) return { error: 'First preview a dragon with *' + prefix + 'starthunt --' + name + '*.' };
       if (normalizeDragonName(player.pendingStarter) !== normalizeDragonName(found.species)) return { error: 'You previewed *' + player.pendingStarter + '*. Preview *' + found.species + '* before choosing it.' };
       const dragon = createStarter(found.species);
-      player.dragons.push(dragon);
+      addDragon(player, dragon);
       player.starterClaimed = true;
       player.starterSelectionActive = false;
       player.pendingStarter = null;
