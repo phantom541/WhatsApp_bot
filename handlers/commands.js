@@ -23,9 +23,10 @@ import mart from '../commands/mart.js';
 import shop from '../commands/shop.js';
 import buy from '../commands/buy.js';
 import equipcharm from '../commands/equipcharm.js';
+import use from '../commands/use.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm].map(c => [c.name, c]));
+const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
