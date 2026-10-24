@@ -10,7 +10,7 @@ export default {name:'ban',description:'Bot staff ban a player',async execute({p
  if(!protectedTarget(db,phone,target))return 'Cannot ban your own or higher-ranked staff role.';
  if(db.botBans[target])return 'Already banned.';
  const record=targetPlayer(db,target);if(!record)return 'Target must have a registered profile with a verified phone number.';
- db.botBans[target]={reason,by:phone,at:new Date().toISOString()};
+ db.botBans[target]={reason,by:phone,at:new Date().toISOString(),jid:record.jid};
  logStaff(db,phone,'ban',target);
  return '⛔ Player banned from Dragon Bot. Reason: '+reason;
  });return reply(result);
