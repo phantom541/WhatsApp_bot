@@ -5,6 +5,7 @@ export default {
   async execute({ sender, reply, prefix }) {
     const result = await updateDatabase(db => {
       const p = db.players[sender];
+      if (p.pendingRecruit) return { error: 'First recruit your defeated dragon with _recruit party or _recruit den.' };
       if (p.activeEncounter) return { existing: p.activeEncounter };
       const now = Date.now();
       const wait = HUNT_COOLDOWN_MS - (now - (p.lastHuntAt || 0));
@@ -17,6 +18,6 @@ export default {
     if (result.error) return reply(result.error);
     if (result.wait) return reply('⏳ Wait ' + result.wait + ' seconds before hunting again.');
     const e = result.encounter || result.existing;
-    return reply('🌲 *Wild dragon encountered!*\n' + e.emoji + ' ' + e.species + ' | ' + e.dragonClass + ' Class\nLevel: ' + e.level + ' | HP: ' + e.hp + '\n\nUse *' + prefix + 'battle* to attack or *' + prefix + 'flee* to leave.');
+    return reply('🌲 *Wild dragon encountered!*\n' + e.emoji + ' ' + e.species + ' | ' + e.dragonClass + ' Class\nLevel: ' + e.level + ' | HP: ' + e.hp + '\n\nUse *' + prefix + 'catch ' + e.species.toLowerCase().replace(/\s+/g, '-') + '* to catch, *' + prefix + 'catch* to battle, or *' + prefix + 'flee* to leave.');
   }
 };
