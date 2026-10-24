@@ -70,15 +70,16 @@ export async function handleMessage(sock, message) {
   const reply = text => sock.sendMessage(jid, { text }, { quoted: message });
   try {
     const db=await readDatabase();
-    const role=roleOf(db,phone);
-    if(roleRank(role)===0&&(phone&&db.botBans?.[phone]||Object.values(db.botBans||{}).some(b=>b.jid===sender)))return reply('⛔ You are banned from Dragon Bot.');
+    const resolvedPhone=phone||db.players?.[sender]?.phoneNumber||null;
+    const role=roleOf(db,resolvedPhone);
+    if(roleRank(role)===0&&(resolvedPhone&&db.botBans?.[resolvedPhone]||Object.values(db.botBans||{}).some(b=>b.jid===sender)))return reply('⛔ You are banned from Dragon Bot.');
     const rescue=['botmode','staff','ban','unban','staffperks','stafflog'];
     if(db.botSettings?.enabled===false&&!rescue.includes(name?.toLowerCase()))return reply('🔌 Dragon Bot game commands are paused by staff.');
     if (['hunt', 'spawn', 'battle'].includes(name?.toLowerCase()) || command?.requiresStarter) {
       if (!await requireStarter(sender, reply, config.prefix)) return;
     }
     if (!command) return reply('That feature is not available yet.');
-    await command.execute({ sender, reply, prefix: config.prefix, commands, args, sock, message, phone });
+    await command.execute({ sender, reply, prefix: config.prefix, commands, args, sock, message, phone:resolvedPhone });
   }
   catch (error) { console.error('Command ' + name + ' failed:', error); await reply('That command failed. Please try again.'); }
 }
