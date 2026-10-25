@@ -12,7 +12,7 @@ export default {name:'battle',requiresStarter:true,description:'Show battle acti
   const d=activeDragon(p);
   if(!d)return reply('No healthy dragon. Use '+prefix+'flee then '+prefix+'rest.');
   ensureMoves(d);
-  return reply('⚔️ *'+d.species+' moves*\n'+d.moves.map((m,i)=>(i+1)+'. '+m.name+' | '+m.type+' | Power '+m.power+' | Accuracy '+m.accuracy+'%').join('\n')+'\n\nUse '+prefix+'battlefight 2');
+  return reply('⚔️ *'+d.species+' moves*\n'+d.moves.map((m,i)=>(i+1)+'. '+m.name+' | '+m.type+' | Power '+m.power+' | Accuracy '+m.accuracy+'%').join('\n')+'\n\nUse '+prefix+'battlefight [move number]');
  }
  return reply('⚔️ *Battle options*\n'+prefix+'battle fight - show moves\n'+prefix+'battle item - view bag\n'+prefix+'flee - forfeit\n'+prefix+'swap 2 - swap dragons (ends turn)');
 }};
