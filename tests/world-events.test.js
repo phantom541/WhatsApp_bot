@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createSpawn,claimEncounter,beginBattle,touchBattle,expireWorld,world,SPAWN_LIFETIME,SPAWN_PROTECTION,BATTLE_IDLE} from '../lib/world-events.js';
+import {COLOSSI,createColossus} from '../lib/colossi.js';
+import {BESTIARY,dungeonEnemy} from '../lib/dungeon-combat.js';
+const group='test@g.us',a='a@s.whatsapp.net',b='b@s.whatsapp.net',dragon={id:'d1',species:'Night Fury',hp:100};
+test('spawner owns first two minutes, then anyone can challenge',()=>{const db={players:{}};assert.equal(createSpawn(db,group,dragon,a,true,1000),true);assert.equal(createSpawn(db,group,dragon,b,false,1000),false);assert.match(claimEncounter(db,group,b,1000).error,/reserved/);assert.equal(claimEncounter(db,group,b,1000+SPAWN_PROTECTION).encounter.species,'Night Fury');});
+test('five-minute despawn stops once a battle begins',()=>{const db={players:{[a]:{activeEncounter:{...dragon}}}};createSpawn(db,group,dragon,a,true,1000);assert.equal(beginBattle(db,group,a,'wild',1000+SPAWN_LIFETIME-1000),true);assert.equal(beginBattle(db,group,b,'wild',1000+SPAWN_LIFETIME-900),false);assert.deepEqual(expireWorld(db,1000+SPAWN_LIFETIME+1000),[]);assert.ok(world(db).spawns[group]);touchBattle(db,group,a,1000+SPAWN_LIFETIME+1000);const events=expireWorld(db,1000+SPAWN_LIFETIME+1000+BATTLE_IDLE);assert.ok(events.some(e=>e.text.includes('fled')));assert.equal(world(db).spawns[group],undefined);assert.equal(db.players[a].activeEncounter,null);});
+test('uncontested dragon despawns after five minutes',()=>{const db={};createSpawn(db,group,dragon,a,false,1000);assert.equal(expireWorld(db,1000+SPAWN_LIFETIME).length,1);assert.equal(world(db).spawns[group],undefined);});
+test('six canonical colossi and ten-floor dungeon bosses',()=>{assert.equal(COLOSSI.length,6);assert.ok(createColossus(0).isColossus);assert.equal(Object.keys(BESTIARY).length,6);for(const key of Object.keys(BESTIARY)){assert.equal(BESTIARY[key].mobs.length,3);assert.equal(dungeonEnemy(key,10).boss,true);assert.equal(dungeonEnemy(key,1).boss,false);}});
