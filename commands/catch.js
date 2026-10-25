@@ -13,7 +13,7 @@ export default {name:'catch',requiresStarter:true,description:'Catch or battle a
  if(!e)return {error:'No wild dragon. Use '+prefix+'hunt.'};
  if(!name){if(group&&!beginBattle(db,group,sender,'wild'))return {error:'Another player is battling.'};if(group)touchBattle(db,group,sender);return {battle:true,species:e.species}}
  if(normalizeDragonName(name.replace(/-/g,' '))!==normalizeDragonName(e.species))return {error:'The wild dragon is '+e.species+'.'};
- if(e.isColossus)return {error:'Colossal Beasts cannot be caught. Defeat one to claim it.'};
+ if(e.isColossus)return {error:'Colossal Beasts cannot be caught. Use _catch without a name to battle it.'};
  if(group&&world(db).battles[group]&&world(db).battles[group].player!==sender)return {error:'Another player is battling.'};
  const penalty={Common:0,Uncommon:5,Rare:12,Epic:20,Legendary:30}[e.rarity]||0,chance=Math.max(3,captureChance(e)-penalty);e.captureTool=null;
  if(randomInt(100)>=chance)return {failed:true,chance};
