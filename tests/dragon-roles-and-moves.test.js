@@ -11,7 +11,7 @@ test('all species have exactly 16 deterministic identity moves with accuracy and
   const pool=speciesMoves(d);
   assert.equal(pool.length,16,info.species);
   assert.equal(new Set(pool.map(m=>m.name)).size,16,info.species);
-  for(const m of pool){assert.ok(m.power>0);assert.ok(m.accuracy>=35&&m.accuracy<=100);assert.ok(m.type);}
+  for(const m of pool){assert.ok(m.power>0);assert.ok([65,70,75,80,85,90,95,100].includes(m.accuracy));assert.ok(m.type);}
   ensureMoves(d);
   assert.equal(d.moves.length,4);
   assert.equal(d.moves[3].name,signatureMove(d).name);
@@ -49,4 +49,16 @@ test('faster dragon takes first turn regardless of side',()=>{
  const p2={dragons:[fast],party:[fast.id],activeDragonId:fast.id,activeEncounter:{...slow,hp:500,maxHp:500},engagement:{}};
  const r2=useMove(p2,1);
  assert.equal(r2.enemyFirst,false);
+});
+
+test('rare apex and legendary attackers have exceptionally powerful moves',()=>{
+ const fury={species:'Red Fury',dragonClass:'strike',powerTier:5};
+ const moves=speciesMoves(fury);
+ assert.equal(moves[15].name,'Crimson Stormfire');
+ assert.ok(moves.some(m=>m.power>=200));
+ const stats=combatStats('Red Fury','strike',1,5);
+ assert.ok(stats.maxHp>=550&&stats.attack>=135&&stats.defense>=105&&stats.speed>=155);
+ assert.equal(dragonProfile('Red Fury','strike').role,'apex');
+ const legend=speciesMoves({species:'Skrill',dragonClass:'strike',powerTier:5});
+ assert.ok(legend.some(m=>m.power>=200));
 });
