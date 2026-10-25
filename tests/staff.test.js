@@ -10,6 +10,8 @@ process.env.BOT_OWNER_NUMBERS='26770000001';
 
 const {updateDatabase,readDatabase}=await import('../lib/database.js');
 const {roleOf}=await import('../lib/roles.js');
+const {config}=await import('../config.js');
+config.prefix='_';
 const {handleMessage}=await import('../handlers/commands.js');
 const staff=(await import('../commands/staff.js')).default;
 const grant=(await import('../commands/grant.js')).default;
