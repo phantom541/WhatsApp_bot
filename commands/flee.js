@@ -1,13 +1,3 @@
-import { updateDatabase } from '../lib/database.js';
-export default {
-  name: 'flee', requiresStarter: true, description: 'Leave a wild encounter',
-  async execute({ sender, reply }) {
-    const fled = await updateDatabase(db => {
-      const p = db.players[sender];
-      if (!p.activeEncounter) return false;
-      p.activeEncounter = null;
-      return true;
-    });
-    return reply(fled ? '🏃 You escaped the encounter safely.' : 'You are not in an encounter.');
-  }
-};
+import {updateDatabase} from '../lib/database.js';
+import {groupId,world,endBattle} from '../lib/world-events.js';
+export default {name:'flee',requiresStarter:true,description:'Leave an encounter',async execute({sender,reply,message}){const group=groupId(message.key.remoteJid);const r=await updateDatabase(db=>{const p=db.players[sender];if(p.dungeonBattle){p.dungeonBattle=null;if(group&&world(db).battles[group]?.player===sender)endBattle(db,group);return true}if(!p.activeEncounter)return false;p.activeEncounter=null;if(group&&world(db).battles[group]?.player===sender)endBattle(db,group);return true});return reply(r?'🏃 You escaped the battle.':'No active battle.');}};
