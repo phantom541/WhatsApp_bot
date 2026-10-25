@@ -4,7 +4,7 @@ import {dungeonFight} from '../lib/dungeon-combat.js';
 import {pvpMove} from '../lib/pvp.js';
 import {groupId,world,touchBattle,endBattle} from '../lib/world-events.js';
 export default {name:'battlefight',requiresStarter:true,description:'Use a move by slot number',async execute({sender,reply,args,prefix,message}){
- const slot=Number(args[0]);if(!Number.isInteger(slot)||slot<1||slot>4)return reply('Use '+prefix+'battlefight 1, 2, 3 or 4.');
+ const slot=Number(args[0]);if(!Number.isInteger(slot)||slot<1||slot>12)return reply('Use '+prefix+'battlefight followed by a move number (1-4 for dragons, 1-12 for Colossi).');
  const group=groupId(message.key.remoteJid);
  const r=await updateDatabase(db=>{const p=db.players[sender];if(group&&world(db).battles[group]?.kind==='pvp')return {...pvpMove(db,group,sender,slot),pvp:true};if(group&&world(db).battles[group]?.player!==sender&&world(db).battles[group])return {error:'Another player is battling in this group.'};if(group&&world(db).spawns[group]&&!world(db).battles[group])return {error:'Use _catch to begin battling the spawned dragon.'};if(group&&world(db).battles[group])touchBattle(db,group,sender);if(p.dungeonBattle){const result=dungeonFight(p,slot);if((result.won||result.lost)&&group)endBattle(db,group);return {...result,dungeon:true}}if(group&&world(db).battles[group]?.kind==='wild'&&!p.activeEncounter)return {error:'Begin the encounter with _catch.'};const result=useMove(p,slot);if(group&&world(db).spawns[group]&&p.activeEncounter)world(db).spawns[group].hp=p.activeEncounter.hp;if(group&&(result.won||result.enemy?.lost))endBattle(db,group);return result});
  if(r.error)return reply(r.error);
