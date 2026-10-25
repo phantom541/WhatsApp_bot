@@ -1,3 +1,4 @@
+import colossus from '../commands/colossus.js';
 import species from '../commands/species.js';
 import leaderboard from '../commands/leaderboard.js';
 import ping from '../commands/ping.js';
@@ -61,7 +62,7 @@ import forgedragon from '../commands/forgedragon.js';
 import setdragonlevel from '../commands/setdragonlevel.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([species, leaderboard, ping, menu, register, profile, starter, dragons, dragon, classes, dungeons, dungeon, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel].map(c => [c.name, c]));
+const commands = new Map([colossus, species, leaderboard, ping, menu, register, profile, starter, dragons, dragon, classes, dungeons, dungeon, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
