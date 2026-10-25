@@ -3,42 +3,16 @@ import {fileURLToPath} from 'node:url';
 import {join,dirname} from 'node:path';
 import {readDatabase,updateDatabase} from '../lib/database.js';
 import {DUNGEONS,dungeonKey,dungeonCaption} from '../lib/dungeons.js';
+import {BESTIARY,dungeonEnemy} from '../lib/dungeon-combat.js';
+import {groupId,world,beginBattle,endBattle} from '../lib/world-events.js';
 const assets=join(dirname(fileURLToPath(import.meta.url)),'..','assets','dungeons');
-export default {name:'dungeon',requiresStarter:true,description:'View, enter or leave a dungeon',async execute({sender,reply,args,prefix,sock,message}){
- const action=(args[0]||'').toLowerCase();
- if(action==='leave'||action==='exit'){
-  const result=await updateDatabase(db=>{
-   const p=db.players[sender];
-   if(!p.activeDungeon)return 'You are not inside a dungeon.';
-   const name=DUNGEONS[p.activeDungeon]?.name||'the dungeon';
-   p.activeDungeon=null;p.dungeonEnteredAt=null;
-   return '🚪 You leave '+name+'.';
-  });
-  return reply(result);
- }
- if(action==='enter'){
-  const key=dungeonKey(args.slice(1).join(' '));
-  if(!key)return reply('Choose a gate: '+Object.keys(DUNGEONS).join(', '));
-  const result=await updateDatabase(db=>{
-   const p=db.players[sender];
-   if(p.activeEncounter||p.pendingRecruit)return 'Finish your wild encounter first.';
-   if(p.activeDungeon)return 'Already inside '+DUNGEONS[p.activeDungeon].name+'. Use '+prefix+'dungeon leave.';
-   p.activeDungeon=key;p.dungeonEnteredAt=Date.now();
-   return null;
-  });
-  if(result)return reply(result);
-  return reply('🚪 *Entered '+DUNGEONS[key].name+'*\nThe vortex seals behind you.\n\n🔮 _'+DUNGEONS[key].scry+'_\n\nDungeon combat is not available yet.\nExit: '+prefix+'dungeon leave');
- }
- const key=dungeonKey(args.join(' '));
- if(!key)return reply('See '+prefix+'dungeons or inspect with '+prefix+'dungeon blue.');
- const player=(await readDatabase()).players[sender];
- if(player.activeDungeon)return reply('Leave your current dungeon first: '+prefix+'dungeon leave');
- const caption=dungeonCaption(key,prefix);
- try{
-  const image=await readFile(join(assets,DUNGEONS[key].image));
-  return sock.sendMessage(message.key.remoteJid,{image,caption},{quoted:message});
- }catch(error){
-  if(error.code!=='ENOENT')throw error;
-  return reply(caption+'\n\n(Gate image not installed on the bot server yet.)');
- }
+export default {name:'dungeon',requiresStarter:true,description:'Explore ten-floor dungeons',async execute({sender,reply,args,prefix,sock,message}){
+ const action=(args[0]||'').toLowerCase(),group=groupId(message.key.remoteJid);
+ if(action==='leave'||action==='exit'){const result=await updateDatabase(db=>{const p=db.players[sender];if(!p.activeDungeon)return 'You are not inside a dungeon.';const name=DUNGEONS[p.activeDungeon].name,floor=p.dungeonFloor||1;const reward=floor>=6?floor*200:0;p.coins=(p.coins||0)+reward;p.activeDungeon=null;p.dungeonFloor=0;p.dungeonBattle=null;if(group&&world(db).battles[group]?.player===sender)endBattle(db,group);return '🚪 Left '+name+'. '+(reward?'Partial reward: '+reward+' coins.':'No partial reward before clearing floor 5.')});return reply(result)}
+ if(action==='enter'){const key=dungeonKey(args.slice(1).join(' '));if(!key)return reply('Choose a gate: '+Object.keys(DUNGEONS).join(', '));const result=await updateDatabase(db=>{const p=db.players[sender];if(p.activeEncounter||p.pendingRecruit)return 'Finish your wild encounter first.';if(p.activeDungeon)return 'Already inside '+DUNGEONS[p.activeDungeon].name+'.';p.activeDungeon=key;p.dungeonFloor=1;p.dungeonBattle=null;p.dungeonEnteredAt=Date.now();return null});if(result)return reply(result);return reply('🚪 *Entered '+DUNGEONS[key].name+'*\n🔮 _'+DUNGEONS[key].scry+'_\n\nFloor 1 of 10. Use '+prefix+'dungeon next to encounter a monster.')}
+ if(action==='next'||action==='fight'){const r=await updateDatabase(db=>{const p=db.players[sender];if(!p.activeDungeon)return {error:'Enter a dungeon first.'};if(p.dungeonBattle)return {enemy:p.dungeonBattle.enemy,floor:p.dungeonFloor};if(group&&world(db).battles[group]&&world(db).battles[group].player!==sender)return {error:'Another battle is active in this group.'};if(group&&!beginBattle(db,group,sender,'dungeon'))return {error:'This group is busy.'};const enemy=dungeonEnemy(p.activeDungeon,p.dungeonFloor||1);p.dungeonBattle={enemy};return {enemy,floor:p.dungeonFloor}});if(r.error)return reply(r.error);return reply('⚔️ Floor '+r.floor+'/10: *'+r.enemy.species+'*'+(r.enemy.boss?' 👑 BOSS':'')+'\nHP '+r.enemy.hp+' | Level '+r.enemy.level+'\nUse '+prefix+'battlefight 1-4.')}
+ if(action==='status'){const p=(await readDatabase()).players[sender];return reply(p.activeDungeon?'🌀 '+DUNGEONS[p.activeDungeon].name+' | Floor '+(p.dungeonFloor||1)+'/10\n'+(p.dungeonBattle?'Enemy: '+p.dungeonBattle.enemy.species+' HP '+p.dungeonBattle.enemy.hp:'Use '+prefix+'dungeon next'):'Not inside a dungeon.')}
+ if(action==='monsters'){const key=dungeonKey(args.slice(1).join(' '));if(!key)return reply('Use '+prefix+'dungeon monsters blue');const b=BESTIARY[key];return reply('📖 '+DUNGEONS[key].name+'\nMonsters: '+b.mobs.join(', ')+'\nFloor 10 boss: '+b.boss)}
+ const key=dungeonKey(args.join(' '));if(!key)return reply('Use '+prefix+'dungeons, '+prefix+'dungeon enter blue, or '+prefix+'dungeon status.');
+ const caption=dungeonCaption(key,prefix);try{const image=await readFile(join(assets,DUNGEONS[key].image));return sock.sendMessage(message.key.remoteJid,{image,caption},{quoted:message})}catch(error){if(error.code!=='ENOENT')throw error;return reply(caption+'\n(Gate image missing on server.)')}
 }};
