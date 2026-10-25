@@ -3,7 +3,7 @@ import {activeDragon} from '../lib/collection.js';
 import {ensureMoves} from '../lib/moves.js';
 export default {name:'battle',requiresStarter:true,description:'Show battle actions or moves/items',async execute({sender,reply,args,prefix}){
  const p=(await readDatabase()).players[sender];
- if(!p.activeEncounter)return reply('No active encounter. Use '+prefix+'hunt.');
+ if(!p.activeEncounter&&!p.dungeonBattle)return reply('No active encounter. Use '+prefix+'hunt or '+prefix+'dungeon next.');
  const action=(args[0]||'').toLowerCase();
  if(action==='item')return reply('🎒 Use '+prefix+'bag to see supplies, then '+prefix+'use potion or '+prefix+'use guardtonic. Using an item ends your turn.');
  if(action==='fight'){
