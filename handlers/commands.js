@@ -1,3 +1,4 @@
+import leaderboard from '../commands/leaderboard.js';
 import ping from '../commands/ping.js';
 import menu from '../commands/menu.js';
 import register from '../commands/register.js';
@@ -33,7 +34,7 @@ import party from '../commands/party.js';
 import den from '../commands/den.js';
 import transfer from '../commands/transfer.js';
 import spawn from '../commands/spawn.js';
-import {readDatabase} from '../lib/database.js';
+import {readDatabase,updateDatabase} from '../lib/database.js';
 import {roleOf,roleRank} from '../lib/roles.js';
 import {phoneFromMessage} from '../lib/identity.js';
 import daily from '../commands/daily.js';
@@ -57,7 +58,7 @@ import forgedragon from '../commands/forgedragon.js';
 import setdragonlevel from '../commands/setdragonlevel.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel].map(c => [c.name, c]));
+const commands = new Map([leaderboard, ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
@@ -81,6 +82,7 @@ export async function handleMessage(sock, message) {
     }
     if (!command) return reply('That feature is not available yet.');
     await command.execute({ sender, reply, prefix: config.prefix, commands, args, sock, message, phone:resolvedPhone });
+    if (name?.toLowerCase() !== 'leaderboard') await updateDatabase(data => { const p=data.players?.[sender]; if(p){p.engagement ||= {};p.engagement.commands=(p.engagement.commands||0)+1;p.engagement.lastActiveAt=new Date().toISOString();} });
   }
   catch (error) { console.error('Command ' + name + ' failed:', error); await reply('That command failed. Please try again.'); }
 }
