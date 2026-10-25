@@ -8,7 +8,6 @@ import starter from '../commands/starter.js';
 import dragons from '../commands/dragons.js';
 import dragon from '../commands/dragon.js';
 import classes from '../commands/classes.js';
-import types from '../commands/types.js';
 import starthunt from '../commands/starthunt.js';
 import starterdrgon from '../commands/starterdrgon.js';
 import hunt from '../commands/hunt.js';
@@ -60,7 +59,7 @@ import forgedragon from '../commands/forgedragon.js';
 import setdragonlevel from '../commands/setdragonlevel.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([species, leaderboard, ping, menu, register, profile, starter, dragons, dragon, classes, types, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel].map(c => [c.name, c]));
+const commands = new Map([species, leaderboard, ping, menu, register, profile, starter, dragons, dragon, classes, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
