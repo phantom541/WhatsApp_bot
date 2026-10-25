@@ -75,6 +75,7 @@ export async function handleMessage(sock, message) {
   const phone=phoneFromMessage(message);
   const reply = text => sock.sendMessage(jid, { text }, { quoted: message });
   try {
+    if(jid?.endsWith('@g.us'))await updateDatabase(data=>{data.worldEvents ||= {spawns:{},battles:{},lastColossusAt:0};data.worldEvents.knownGroups ||= {};data.worldEvents.knownGroups[jid]=true});
     const db=await readDatabase();
     const resolvedPhone=phone||db.players?.[sender]?.phoneNumber||null;
     const role=roleOf(db,resolvedPhone);
