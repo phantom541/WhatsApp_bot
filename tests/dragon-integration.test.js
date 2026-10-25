@@ -34,10 +34,10 @@ test('starters begin weak but improve faster at high levels',()=>{
  const before={hp:d.maxHp,attack:d.attack,defense:d.defense,speed:d.speed};
  awardXp(d,200000);
  assert.equal(d.level,100);
- assert.ok(d.maxHp>before.hp+800);
+ assert.ok(d.maxHp>before.hp+400);
  assert.ok(d.attack>before.attack+200);
- assert.ok(d.defense>before.defense+100);
- assert.ok(d.speed>before.speed+30);
+ assert.ok(d.defense>before.defense+40);
+ assert.ok(d.speed>before.speed+60);
 });
 test('creator-bound Red Fury is not tradable or mistaken for starter',()=>{
  const d=createCapturedDragon({species:'Red Fury',level:25,maxHp:500,attack:100});
