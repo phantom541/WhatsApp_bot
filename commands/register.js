@@ -4,11 +4,13 @@ import {roleOf} from '../lib/roles.js';
 import {dragonSpeciesInfo,DRAGON_CLASSES} from '../lib/dragons.js';
 import {addDragon} from '../lib/collection.js';
 import {randomUUID} from 'node:crypto';
+import {combatStats} from '../lib/dragon-combat-profile.js';
 function linkCreatorDragon(db,p,phone){
  if(roleOf(db,phone)!=='creator')return;
  if(p.dragons?.some(d=>d.creatorBound&&d.species==='Red Fury'))return;
  const info=dragonSpeciesInfo('Red Fury'),cls=DRAGON_CLASSES.strike;
- addDragon(p,{id:randomUUID(),species:info.species,dragonClass:cls.label,element:cls.label,emoji:'🔴',level:1,xp:0,hp:350,maxHp:350,attack:65,defense:32,speed:38,ability:'Crimson Stormfire',rarity:info.rarity,powerTier:5,origin:info.origin,creatorBound:true,tradable:false,isStarter:false,acquiredAt:new Date().toISOString()},'den');
+ const stats=combatStats('Red Fury','strike',1,5);
+ addDragon(p,{id:randomUUID(),species:info.species,dragonClass:cls.label,element:cls.label,emoji:'🔴',level:1,xp:0,hp:stats.maxHp,maxHp:stats.maxHp,attack:stats.attack,defense:stats.defense,speed:stats.speed,role:'apex',combatType:'storm',ability:'Crimson Stormfire',rarity:info.rarity,powerTier:5,origin:info.origin,creatorBound:true,tradable:false,isStarter:false,acquiredAt:new Date().toISOString()},'den');
 }
 
 export default {name:'register',description:'Register WhatsApp player profile',async execute({sender,phone,message,reply}){
