@@ -13,7 +13,7 @@ export default {
       const player = db.players[sender];
       if (!player) return { error: 'Register first with *' + prefix + 'register*.' };
       if (!Array.isArray(player.dragons)) player.dragons = [];
-      if (player.starterClaimed || player.dragons.length) return { error: 'You have already claimed your starter dragon.' };
+      if (player.starterClaimed || player.dragons.some(d => !d.creatorBound)) return { error: 'You have already claimed your starter dragon.' };
       if (!player.starterSelectionActive || !player.pendingStarter) return { error: 'First preview a dragon with *' + prefix + 'starthunt --' + name + '*.' };
       if (normalizeDragonName(player.pendingStarter) !== normalizeDragonName(found.species)) return { error: 'You previewed *' + player.pendingStarter + '*. Preview *' + found.species + '* before choosing it.' };
       const dragon = createStarter(found.species);
