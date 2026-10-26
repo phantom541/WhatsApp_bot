@@ -1,6 +1,7 @@
 import {readDatabase} from '../lib/database.js';
 import {playerTag} from '../lib/identity.js';
 import {roleOf} from '../lib/roles.js';
+import {activeTitle,earnedAchievements} from '../lib/achievements.js';
 import {riderRank,riderPhase,riderPhaseCount,riderXpNeeded,RIDER_LEVEL_CAP} from '../lib/rider-progression.js';
 export default {name:'profile',description:'View decorated rider identity, titles and progression',async execute({sender,phone,reply,prefix}){
  const db=await readDatabase(),p=db.players[sender];
@@ -11,6 +12,8 @@ export default {name:'profile',description:'View decorated rider identity, title
  '🪪 Name: '+safe(p.whatsappName||'Dragon Rider')+'\n' +
  '🔰 Rider ID: '+safe(playerTag(p.whatsappName,p.phoneNumber))+'\n' +
  '🏷️ Dragon Rank: '+riderRank(p)+'\n' +
+ '🎖️ Equipped Title: '+activeTitle(p)+'\n' +
+ '🏆 Achievements: '+(p.achievementsClaimed?.length||0)+'/'+earnedAchievements(p).length+' claimed\n' +
  '🛡️ Role: '+roleOf(db,phone)+'\n' +
  '⭐ Stage: '+level+'/'+RIDER_LEVEL_CAP+' | Phase '+riderPhase(p)+'/'+riderPhaseCount(level)+'\n' +
  (level===RIDER_LEVEL_CAP&&riderPhase(p)===5?'✨ Ascension unlocked • XP: '+(p.ascensionXp||0):'📈 Rider XP: '+(p.riderXp||0)+'/'+riderXpNeeded(level,riderPhase(p)))+'\n' +
