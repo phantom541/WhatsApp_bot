@@ -6,7 +6,7 @@ export function lookupDragon(player,query){
  ensureCollection(player);
  const input=String(query||'').trim();
  const number=/^#?\d+$/.test(input)?Number(input):null;
- const matches=number===null?player.dragons.map((d,i)=>({d,i})).filter(({d})=>normalizeDragonName(d.species)===normalizeDragonName(input)):null;
+ const matches=number===null?player.dragons.map((d,i)=>({d,i})).filter(({d})=>normalizeDragonName(d.species)===normalizeDragonName(input)||(normalizeDragonName(input)==='redfurry'&&normalizeDragonName(d.species)==='redfury')):null;
  const owned=number!==null?(number>=1&&number<=player.dragons.length?{d:player.dragons[number-1],i:number-1}:null):matches?.[0];
  const species=owned?dragonSpeciesInfo(owned.d.species):(number!==null?dragonSpeciesById(number):dragonSpeciesInfo(input));
  if(!owned&&!species)return {error:'Dragon not found in your collection or the bestiary.'};
@@ -35,6 +35,7 @@ export default {
   if(!player)return reply('Register first with '+prefix+'register.');
   const query=args.join(' ').trim();
   if(!query)return reply('Usage: '+prefix+'dragon 1 | '+prefix+'dragon Red Fury | '+prefix+'dragon Ascended Skrill');
-  return reply(lookupDragon(player,query).text||lookupDragon(player,query).error);
+  const result=lookupDragon(player,query);
+  return reply(result.text||result.error);
  }
 };
