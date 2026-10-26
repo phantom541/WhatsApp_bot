@@ -27,6 +27,9 @@ export default {
     [c('profile'),'Rider identity & progression']]],
    ['🐲 *DRAGON SANCTUARY*',[
     [c('dragons'),'View your collection'],
+    [c('dragon 1'),'Inspect by collection number'],
+    [c('dragon Red Fury'),'Search any dragon species'],
+    [c('species'),'Browse the expanded bestiary'],
     [c('party'),'Battle-ready dragons'],
     [c('den'),'Stored dragons'],
     [c('rest'),'Recover your team']]],
@@ -37,6 +40,9 @@ export default {
    ['🌀 *THE SIX FORBIDDEN GATES*',[
     [c('dungeons'),'Discover dungeon gates'],
     [c('dungeon enter blue'),'Enter a gate (example)']]],
+   ['🎮 *PHANTOM ARCADE*',[
+    [c('trivia'),'Dragon trivia mini-game'],
+    [c('pvp challenge'),'Challenge a rider (reply to them)']]],
    ['💎 *REWARDS & LEGACY*',[
     [c('daily'),'Claim daily coins'],
     [c('quests'),'Daily challenges'],
