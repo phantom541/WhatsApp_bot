@@ -4,8 +4,8 @@ import {COLOSSI,createColossus} from '../lib/colossi.js';
 import {COLOSSUS_MOVES} from '../lib/colossus-moves.js';
 import {speciesMoves,ensureMoves} from '../lib/moves.js';
 import {useMove} from '../lib/combat.js';
-test('six beasts each have twelve unique, valid moves',()=>{
- assert.equal(COLOSSI.length,6);
+test('seven beasts each have twelve unique, valid moves',()=>{
+ assert.equal(COLOSSI.length,7);
  for(const beast of COLOSSI){const moves=COLOSSUS_MOVES[beast.id];assert.equal(moves.length,12);assert.equal(new Set(moves.map(m=>m.name)).size,12);assert.ok(moves.every(m=>m.power>0&&m.accuracy>=65&&m.accuracy<=100));}
 });
 test('Colossus party loadout exposes all twelve slots',()=>{
