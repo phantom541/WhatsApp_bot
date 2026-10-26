@@ -23,10 +23,8 @@ export default {
    line
   ];
   const sections=[
-   ['🔥 *AWAKEN YOUR LEGEND*',[
-    [c('register'),'Create your rider identity'],
-    [c('starthunt'),'Choose your first dragon'],
-    [c('profile'),'Rider status & progression']]],
+   ['👑 *RIDER LEGACY*',[
+    [c('profile'),'Rider identity & progression']]],
    ['🐲 *DRAGON SANCTUARY*',[
     [c('dragons'),'View your collection'],
     [c('party'),'Battle-ready dragons'],
@@ -34,14 +32,11 @@ export default {
     [c('rest'),'Recover your team']]],
    ['⚔️ *THE HUNTING GROUNDS*',[
     [c('hunt'),'Seek wild dragons'],
-    [c('catch'),'Catch or challenge a dragon'],
-    [c('battle fight'),'View your battle moves'],
-    [c('battlefight 1'),'Use move slot 1']]],
+    [c('spawn'),'See the active dragon spawn'],
+    [c('catch'),'Catch or challenge a spawned dragon']]],
    ['🌀 *THE SIX FORBIDDEN GATES*',[
     [c('dungeons'),'Discover dungeon gates'],
-    [c('dungeon enter blue'),'Enter a gate (example)'],
-    [c('dungeon next'),'Challenge the next floor'],
-    [c('dungeon status'),'Check your expedition']]],
+    [c('dungeon enter blue'),'Enter a gate (example)']]],
    ['💎 *REWARDS & LEGACY*',[
     [c('daily'),'Claim daily coins'],
     [c('quests'),'Daily challenges'],
