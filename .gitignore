@@ -33,3 +33,12 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Dragon Bot runtime secrets and local state
+node_modules/
+auth/
+data/
+.env
+.env.*
+!.env.example
+npm-debug.log*
