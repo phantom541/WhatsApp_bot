@@ -85,7 +85,7 @@ export async function handleMessage(sock, message) {
     const resolvedPhone=phone||db.players?.[sender]?.phoneNumber||null;
     const role=roleOf(db,resolvedPhone);
     if(role!=='creator'&&(resolvedPhone&&db.botBans?.[resolvedPhone]||Object.values(db.botBans||{}).some(b=>b.jid===sender)))return reply('⛔ You are banned from Dragon Bot.');
-    const rescue=['botmode','staff','ban','unban','staffperks','stafflog'];
+    const rescue=['botmode','staff','ban','unban','staffperks','stafflog','group'];
     if(db.botSettings?.enabled===false&&!rescue.includes(name?.toLowerCase()))return reply('🔌 Dragon Bot game commands are paused by staff.');
     if (['hunt', 'spawn', 'battle'].includes(name?.toLowerCase()) || command?.requiresStarter) {
       if (!await requireStarter(sender, reply, config.prefix)) return;
