@@ -1,9 +1,10 @@
+import { sendStarterImage } from '../lib/starter-images.js';
 import { updateDatabase } from '../lib/database.js';
 import { addDragon } from '../lib/collection.js';
 import { createStarter, findStarterSpecies, describeDragon, normalizeDragonName } from '../lib/dragons.js';
 export default {
   name: 'starterdrgon', description: 'Confirm a previewed starter: --dragon-name-choose',
-  async execute({ sender, reply, prefix, args }) {
+  async execute({ sender, reply, prefix, args, sock, message }) {
     const raw = args.join(' ').trim();
     if (!raw.startsWith('--') || !/-choose$/i.test(raw)) return reply('Usage: *' + prefix + 'starterdrgon --skrill-choose*. First preview with *' + prefix + 'starthunt --skrill*.');
     const name = raw.slice(2).replace(/-choose$/i, '');
@@ -24,6 +25,7 @@ export default {
       player.starterDragonId = dragon.id;
       return { dragon };
     });
-    return reply(result.error || '🎉 *Starter dragon confirmed!*\n\n' + describeDragon(result.dragon) + '\n\nStarter dragons cannot be traded.');
+    if (result.error) return reply(result.error);
+    return sendStarterImage(sock, message, result.dragon.species, '🎉 *Starter dragon confirmed!*\n\n' + describeDragon(result.dragon) + '\n\nStarter dragons cannot be traded.', reply);
   }
 };
