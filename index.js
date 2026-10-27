@@ -82,11 +82,28 @@ async function start() {
   });
 
   sock.ev.on('messages.upsert', async ({ messages, type }) => {
-    if (closed || type !== 'notify') return;
-    for (const message of messages) {
-      if (!message.message || message.key.fromMe) continue;
+    if (closed || currentSocket !== sock) return;
+    console.log('[messages.upsert]', { type, count: messages?.length ?? 0 });
+    for (const message of messages || []) {
+      if (!message.message) {
+        console.log('[message skipped] empty content');
+        continue;
+      }
+      if (message.key.fromMe) {
+        console.log('[message skipped] sent by bot account');
+        continue;
+      }
+      const content = message.message.ephemeralMessage?.message || message.message;
+      const body = content?.conversation || content?.extendedTextMessage?.text ||
+        content?.viewOnceMessage?.message?.conversation || '';
+      console.log('[message received]', {
+        chatType: message.key.remoteJid?.endsWith('@g.us') ? 'group' : 'direct',
+        text: body.slice(0, 80),
+        commandPrefixMatch: body.startsWith(config.prefix)
+      });
       try {
         await handleMessage(sock, message);
+        console.log('[message processed]');
       } catch (error) {
         console.error('Message handler failed:', error);
       }
