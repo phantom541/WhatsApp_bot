@@ -1,4 +1,6 @@
 import group from '../commands/group.js';
+import join from '../commands/join.js';
+import leave from '../commands/leave.js';
 import colossus from '../commands/colossus.js';
 import pvp from '../commands/pvp.js';
 import species from '../commands/species.js';
@@ -67,7 +69,7 @@ import forgedragon from '../commands/forgedragon.js';
 import setdragonlevel from '../commands/setdragonlevel.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([group, achievements, titles, trivia, pvp, colossus, species, leaderboard, ping, menu, register, profile, starter, dragons, dragon, classes, dungeons, dungeon, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel].map(c => [c.name, c]));
+const commands = new Map([group, join, leave, achievements, titles, trivia, pvp, colossus, species, leaderboard, ping, menu, register, profile, starter, dragons, dragon, classes, dungeons, dungeon, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
@@ -85,7 +87,7 @@ export async function handleMessage(sock, message) {
     const resolvedPhone=phone||db.players?.[sender]?.phoneNumber||null;
     const role=roleOf(db,resolvedPhone);
     if(role!=='creator'&&(resolvedPhone&&db.botBans?.[resolvedPhone]||Object.values(db.botBans||{}).some(b=>b.jid===sender)))return reply('⛔ You are banned from Dragon Bot.');
-    const rescue=['botmode','staff','ban','unban','staffperks','stafflog','group'];
+    const rescue=['botmode','staff','ban','unban','staffperks','stafflog','group','join','leave'];
     if(db.botSettings?.enabled===false&&!rescue.includes(name?.toLowerCase()))return reply('🔌 Dragon Bot game commands are paused by staff.');
     if (['hunt', 'spawn', 'battle'].includes(name?.toLowerCase()) || command?.requiresStarter) {
       if (!await requireStarter(sender, reply, config.prefix)) return;
