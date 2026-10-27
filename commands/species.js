@@ -1,3 +1,4 @@
+import {speciesLore} from '../lib/species-lore.js';
 import {ALL_DRAGON_SPECIES,DRAGON_CLASSES,dragonSpeciesInfo} from '../lib/dragons.js';
 const clean=s=>String(s||'').replace(/[\r\n*_~`]/g,'').slice(0,50);
 export default {
@@ -15,7 +16,8 @@ export default {
   }else{
    const found=dragonSpeciesInfo(args.join(' '));
    if(!found)return reply('Species not found. Use '+prefix+'species to browse.');
-   return reply('🐉 *'+clean(found.species)+'*\nClass: '+clean(found.dragonClass)+'\nRarity: '+found.rarity+'\nPower tier: '+found.powerTier+'/5\nOrigin: '+(found.origin==='original'?'Original Dragon Bot':'HTTYD catalog')+'\n'+clean(found.description||'Dragon species from the franchise.'));
+   const lore=speciesLore(found.baseSpecies||found.species);
+   return reply('🐉 *'+clean(found.species)+'*\nClass: '+clean(found.dragonClass)+'\nRarity: '+found.rarity+'\nPower tier: '+found.powerTier+'/5\nOrigin: '+(found.origin==='original'?'Original Dragon Bot':'HTTYD catalog')+'\n'+clean(found.description||'Dragon species from the franchise.')+(lore?'\nHabitat: '+lore.habitat+'\nAttack style: '+lore.combat+'\nNotable trait: '+lore.trait:''));
   }
   const pages=Math.ceil(entries.length/12);
   if(!Number.isSafeInteger(page)||page<1||page>pages)return reply('Choose a page between 1 and '+pages+'.');
