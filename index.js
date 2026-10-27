@@ -11,7 +11,7 @@ const logger = pino({ level: 'silent' });
 async function start() {
   const { state, saveCreds } = await useMultiFileAuthState(config.authDirectory);
   const { version } = await fetchLatestBaileysVersion();
-  const sock = makeWASocket({ auth: state, version, logger, printQRInTerminal: true });
+  const sock = makeWASocket({ auth: state, version, logger, browser: ['Ubuntu', 'Chrome', '120.0.0'] });
   sock.ev.on('creds.update', saveCreds);
   // Optional phone pairing for a single-device Termux setup.
   // Leave PAIRING_PHONE unset to use the existing QR login flow.
@@ -20,7 +20,10 @@ async function start() {
     if (pairingPhone.length < 8 || pairingPhone.length > 15) {
       throw new Error('PAIRING_PHONE must contain an international phone number without + or spaces.');
     }
-    setTimeout(async () => {
+    let pairingRequested = false;
+    sock.ev.on('connection.update', async ({ connection, qr }) => {
+      if (connection === 'close' || pairingRequested || !qr) return;
+      pairingRequested = true;
       try {
         const code = await sock.requestPairingCode(pairingPhone);
         console.log('WhatsApp pairing code: ' + code);
@@ -28,7 +31,7 @@ async function start() {
       } catch (error) {
         console.error('Could not request pairing code:', error?.message || error);
       }
-    }, 2000);
+    });
   }
   const ticker=setInterval(async()=>{try{const events=await updateDatabase(db=>{const now=Date.now(),messages=[...expireWorld(db,now),...expireInvites(db,now)],w=world(db);if(!w.lastColossusAt)w.lastColossusAt=now;if(now-w.lastColossusAt>=COLOSSUS_INTERVAL){w.lastColossusAt=now;const groups=Object.keys(w.knownGroups||{}).filter(g=>!w.spawns[g]&&!w.battles[g]);if(groups.length){const group=groups[Math.floor(Math.random()*groups.length)],b=createColossus();if(createSpawn(db,group,b,null,false,now))messages.push({group,beast:b,text:'🌌 COLOSSAL ANOMALY: '+b.species+' has appeared! Defeat it to claim it. Use _catch to battle.'})}}return messages});for(const e of events){if(e.beast)await sendColossusMessage(sock,e.group,e.beast,e.text);else await sock.sendMessage(e.group,{text:e.text})}}catch(error){console.error('World timer failed',error)}},10000);
   sock.ev.on('connection.update',({connection})=>{if(connection==='close')clearInterval(ticker)});
@@ -43,7 +46,7 @@ async function start() {
     if (connection === 'open') console.log('🐉 Dragon Bot connected.');
     if (connection === 'close') {
       const code = lastDisconnect?.error?.output?.statusCode;
-      if (code === DisconnectReason.loggedOut) return console.error('Logged out. Pair again.');
+      if (code === DisconnectReason.loggedOut) return console.error('WhatsApp logged out this session. Stop the bot, back up auth/ and pair again.');
       console.log('Reconnecting in 3 seconds...');
       setTimeout(() => start().catch(console.error), 3000);
     }
