@@ -1,55 +1,97 @@
-import {updateDatabase} from './lib/database.js';
-import {expireWorld,world,COLOSSUS_INTERVAL,createSpawn} from './lib/world-events.js';
-import {sendColossusMessage} from './lib/colossus-images.js';
-import {createColossus} from './lib/colossi.js';
-import {expireInvites} from './lib/pvp.js';
-import makeWASocket, { DisconnectReason, useMultiFileAuthState, fetchLatestBaileysVersion } from '@whiskeysockets/baileys';
+import makeWASocket, {
+  DisconnectReason,
+  useMultiFileAuthState,
+  fetchLatestBaileysVersion
+} from '@whiskeysockets/baileys';
 import pino from 'pino';
 import { config } from './config.js';
 import { handleMessage } from './handlers/commands.js';
+
 const logger = pino({ level: 'silent' });
+const pairingPhone = String(process.env.PAIRING_PHONE || '').replace(/\D/g, '');
+let reconnectTimer;
+let currentSocket;
+
+function errorSummary(error) {
+  return {
+    statusCode: error?.output?.statusCode ?? null,
+    message: error?.message ?? String(error ?? 'unknown'),
+    reason: error?.output?.payload?.error ?? null
+  };
+}
+
 async function start() {
+  if (pairingPhone && (pairingPhone.length < 8 || pairingPhone.length > 15)) {
+    throw new Error('PAIRING_PHONE must be an international number, 8 to 15 digits, without +.');
+  }
+
   const { state, saveCreds } = await useMultiFileAuthState(config.authDirectory);
   const { version } = await fetchLatestBaileysVersion();
-  const sock = makeWASocket({ auth: state, version, logger, browser: ['Ubuntu', 'Chrome', '120.0.0'] });
+  const sock = makeWASocket({
+    auth: state,
+    version,
+    logger,
+    browser: ['Ubuntu', 'Chrome', '120.0.0'],
+    printQRInTerminal: false
+  });
+  currentSocket = sock;
   sock.ev.on('creds.update', saveCreds);
-  // Optional phone pairing for a single-device Termux setup.
-  // Leave PAIRING_PHONE unset to use the existing QR login flow.
-  const pairingPhone = String(process.env.PAIRING_PHONE || '').replace(/\D/g, '');
-  if (!state.creds.registered && pairingPhone) {
-    if (pairingPhone.length < 8 || pairingPhone.length > 15) {
-      throw new Error('PAIRING_PHONE must contain an international phone number without + or spaces.');
-    }
-    let pairingRequested = false;
-    sock.ev.on('connection.update', async ({ connection, qr }) => {
-      if (connection === 'close' || pairingRequested || !qr) return;
+
+  let pairingRequested = false;
+  let closed = false;
+
+  sock.ev.on('connection.update', async ({ connection, qr, lastDisconnect }) => {
+    if (closed || currentSocket !== sock) return;
+
+    if (qr && !state.creds.registered && pairingPhone && !pairingRequested) {
       pairingRequested = true;
       try {
         const code = await sock.requestPairingCode(pairingPhone);
-        console.log('WhatsApp pairing code: ' + code);
-        console.log('On WhatsApp: Linked devices > Link a device > Link with phone number instead.');
+        if (!closed) {
+          console.log('WhatsApp pairing code: ' + code);
+          console.log('WhatsApp > Linked devices > Link a device > Link with phone number instead.');
+        }
       } catch (error) {
-        console.error('Could not request pairing code:', error?.message || error);
+        console.error('Pairing-code request failed:', errorSummary(error));
       }
-    });
-  }
-  const ticker=setInterval(async()=>{try{const events=await updateDatabase(db=>{const now=Date.now(),messages=[...expireWorld(db,now),...expireInvites(db,now)],w=world(db);if(!w.lastColossusAt)w.lastColossusAt=now;if(now-w.lastColossusAt>=COLOSSUS_INTERVAL){w.lastColossusAt=now;const groups=Object.keys(w.knownGroups||{}).filter(g=>!w.spawns[g]&&!w.battles[g]);if(groups.length){const group=groups[Math.floor(Math.random()*groups.length)],b=createColossus();if(createSpawn(db,group,b,null,false,now))messages.push({group,beast:b,text:'🌌 COLOSSAL ANOMALY: '+b.species+' has appeared! Defeat it to claim it. Use _catch to battle.'})}}return messages});for(const e of events){if(e.beast)await sendColossusMessage(sock,e.group,e.beast,e.text);else await sock.sendMessage(e.group,{text:e.text})}}catch(error){console.error('World timer failed',error)}},10000);
-  sock.ev.on('connection.update',({connection})=>{if(connection==='close')clearInterval(ticker)});
-  sock.ev.on('messages.upsert', async ({ messages, type }) => {
-    if (type !== 'notify') return;
-    for (const message of messages) {
-      if (!message.message || message.key.fromMe) continue;
-      await handleMessage(sock, message);
+    }
+
+    if (connection === 'open') {
+      console.log('🐉 Dragon Bot connected.');
+    }
+
+    if (connection === 'close') {
+      closed = true;
+      const details = errorSummary(lastDisconnect?.error);
+      console.error('WhatsApp connection closed:', details);
+      try { sock.ws?.close(); } catch { /* Already closed */ }
+
+      if (details.statusCode === DisconnectReason.loggedOut) {
+        console.error('WhatsApp rejected or logged out this session. Check auth files and pairing; do not delete auth automatically.');
+        return;
+      }
+
+      if (!reconnectTimer) {
+        console.log('Reconnecting in 3 seconds...');
+        reconnectTimer = setTimeout(() => {
+          reconnectTimer = undefined;
+          start().catch(error => console.error('Reconnect failed:', error));
+        }, 3000);
+      }
     }
   });
-  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
-    if (connection === 'open') console.log('🐉 Dragon Bot connected.');
-    if (connection === 'close') {
-      const code = lastDisconnect?.error?.output?.statusCode;
-      if (code === DisconnectReason.loggedOut) return console.error('WhatsApp logged out this session. Stop the bot, back up auth/ and pair again.');
-      console.log('Reconnecting in 3 seconds...');
-      setTimeout(() => start().catch(console.error), 3000);
+
+  sock.ev.on('messages.upsert', async ({ messages, type }) => {
+    if (closed || type !== 'notify') return;
+    for (const message of messages) {
+      if (!message.message || message.key.fromMe) continue;
+      try {
+        await handleMessage(sock, message);
+      } catch (error) {
+        console.error('Message handler failed:', error);
+      }
     }
   });
 }
-start().catch(console.error);
+
+start().catch(error => console.error('Bot startup failed:', error));
