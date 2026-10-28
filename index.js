@@ -4,28 +4,55 @@ import makeWASocket, {
   fetchLatestBaileysVersion
 } from '@whiskeysockets/baileys';
 import pino from 'pino';
+import { createInterface } from 'node:readline/promises';
+import { stdin, stdout } from 'node:process';
 import { config } from './config.js';
 import { handleMessage } from './handlers/commands.js';
 
 const logger = pino({ level: 'silent' });
-const pairingPhone = String(process.env.PAIRING_PHONE || '').replace(/\D/g, '');
-let reconnectTimer;
 let currentSocket;
+let reconnectTimer;
+let pairingPhone = String(process.env.PAIRING_PHONE || '').replace(/\D/g, '');
 
-function errorSummary(error) {
-  return {
-    statusCode: error?.output?.statusCode ?? null,
-    message: error?.message ?? String(error ?? 'unknown'),
-    reason: error?.output?.payload?.error ?? null
-  };
+async function getPairingPhone() {
+  if (!pairingPhone) {
+    if (!stdin.isTTY) {
+      throw new Error('Set PAIRING_PHONE to your WhatsApp number in international format (digits only) for initial pairing.');
+    }
+    const rl = createInterface({ input: stdin, output: stdout });
+    try {
+      pairingPhone = (await rl.question('WhatsApp number to link (country code, no +): ')).replace(/\D/g, '');
+    } finally {
+      rl.close();
+    }
+  }
+  if (!/^\d{8,15}$/.test(pairingPhone)) {
+    throw new Error('PAIRING_PHONE must contain 8 to 15 digits, including country code.');
+  }
+  return pairingPhone;
+}
+
+function statusCode(error) {
+  return error?.output?.statusCode ?? null;
+}
+
+function scheduleReconnect() {
+  if (reconnectTimer) return;
+  console.log('Reconnecting in 3 seconds...');
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = undefined;
+    start().catch(error => {
+      console.error('Reconnect failed:', error);
+      scheduleReconnect();
+    });
+  }, 3000);
 }
 
 async function start() {
-  if (pairingPhone && (pairingPhone.length < 8 || pairingPhone.length > 15)) {
-    throw new Error('PAIRING_PHONE must be an international number, 8 to 15 digits, without +.');
-  }
-
   const { state, saveCreds } = await useMultiFileAuthState(config.authDirectory);
+  // Once linked, saved credentials are reused. A pairing code is needed only
+  // when the WhatsApp account is not registered on this device.
+  const phone = state.creds.registered ? null : await getPairingPhone();
   const { version } = await fetchLatestBaileysVersion();
   const sock = makeWASocket({
     auth: state,
@@ -43,41 +70,40 @@ async function start() {
   sock.ev.on('connection.update', async ({ connection, qr, lastDisconnect }) => {
     if (closed || currentSocket !== sock) return;
 
-    if (qr && !state.creds.registered && pairingPhone && !pairingRequested) {
+    if (qr && !state.creds.registered && phone && !pairingRequested) {
       pairingRequested = true;
       try {
-        const code = await sock.requestPairingCode(pairingPhone);
+        const code = await sock.requestPairingCode(phone);
         if (!closed) {
-          console.log('WhatsApp pairing code: ' + code);
-          console.log('WhatsApp > Linked devices > Link a device > Link with phone number instead.');
+          console.log('WhatsApp phone-number pairing code: ' + code);
+          console.log('On your phone: WhatsApp > Linked devices > Link a device > Link with phone number instead.');
         }
       } catch (error) {
-        console.error('Pairing-code request failed:', errorSummary(error));
+        console.error('Phone-number pairing request failed:', error?.message || error);
       }
     }
 
     if (connection === 'open') {
-      console.log('🐉 Dragon Bot connected.');
+      console.log('🐉 Dragon Bot connected using saved WhatsApp linked-device credentials.');
+      console.log('Command prefix:', JSON.stringify(config.prefix));
     }
 
     if (connection === 'close') {
       closed = true;
-      const details = errorSummary(lastDisconnect?.error);
-      console.error('WhatsApp connection closed:', details);
+      const code = statusCode(lastDisconnect?.error);
+      console.error('WhatsApp connection closed:', code, lastDisconnect?.error?.message || '');
+      if (currentSocket === sock) currentSocket = undefined;
       try { sock.ws?.close(); } catch { /* Already closed */ }
 
-      if (details.statusCode === DisconnectReason.loggedOut) {
-        console.error('WhatsApp rejected or logged out this session. Check auth files and pairing; do not delete auth automatically.');
+      if (code === DisconnectReason.loggedOut || code === DisconnectReason.badSession) {
+        console.error('WhatsApp unlinked this device. Saved auth was preserved; relinking may be required.');
         return;
       }
-
-      if (!reconnectTimer) {
-        console.log('Reconnecting in 3 seconds...');
-        reconnectTimer = setTimeout(() => {
-          reconnectTimer = undefined;
-          start().catch(error => console.error('Reconnect failed:', error));
-        }, 3000);
+      if (code === DisconnectReason.connectionReplaced) {
+        console.error('Another WhatsApp connection replaced this session. Not reconnecting to avoid conflicts.');
+        return;
       }
+      scheduleReconnect();
     }
   });
 
@@ -85,17 +111,9 @@ async function start() {
     if (closed || currentSocket !== sock) return;
     console.log('[messages.upsert]', { type, count: messages?.length ?? 0 });
     for (const message of messages || []) {
-      if (!message.message) {
-        console.log('[message skipped] empty content');
-        continue;
-      }
-      if (message.key.fromMe) {
-        console.log('[message skipped] sent by bot account');
-        continue;
-      }
+      if (!message.message || message.key.fromMe) continue;
       const content = message.message.ephemeralMessage?.message || message.message;
-      const body = content?.conversation || content?.extendedTextMessage?.text ||
-        content?.viewOnceMessage?.message?.conversation || '';
+      const body = content?.conversation || content?.extendedTextMessage?.text || '';
       console.log('[message received]', {
         chatType: message.key.remoteJid?.endsWith('@g.us') ? 'group' : 'direct',
         text: body.slice(0, 80),
@@ -111,40 +129,4 @@ async function start() {
   });
 }
 
-start().catch(error => console.error('Bot startup failed:', error));    // Wait until WhatsApp supplies its initial QR challenge before requesting
-    // a phone-number pairing code. A fixed startup timeout races the socket.
-    sock.ev.on('connection.update', async ({ qr, connection }) => {
-      if (!qr || connection === 'close' || closed || pairingRequested || state.creds.registered) return;
-      pairingRequested = true;
-      try {
-        const code = await sock.requestPairingCode(pairingPhone);
-        if (!closed) {
-          console.log('WhatsApp pairing code: ' + code);
-          console.log('On WhatsApp: Linked devices > Link a device > Link with phone number instead.');
-        }
-      } catch (error) {
-        console.error('Could not request pairing code:', error?.message || error);
-      }
-    });  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
-    if (connection === 'open') {
-      reconnectAttempts = 0;
-      console.log('🐉 Dragon Bot connected.');
-    }
-    if (connection === 'close') {
-      closed = true;
-      if (activeSocket !== sock) return;
-      activeSocket = null;
-      const code = lastDisconnect?.error?.output?.statusCode;
-      if (code === DisconnectReason.loggedOut || code === DisconnectReason.badSession) {
-        console.error('WhatsApp session was rejected (status ' + code + '). Manual pairing is required. Saved credentials will NOT be deleted.');
-        console.error('If this is a first-time setup, stop the bot, back up auth/, then pair again.');
-        return;
-      }
-      if (code === DisconnectReason.connectionReplaced) {
-        console.error('WhatsApp connection replaced by another client. Stopping to avoid conflicting sessions.');
-        return;
-      }
-      console.error('WhatsApp connection closed (status ' + (code ?? 'unknown') + ').');
-      scheduleReconnect();
-    }
-  });
+start().catch(error => console.error('Bot startup failed:', error));
