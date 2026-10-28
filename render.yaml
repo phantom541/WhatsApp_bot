@@ -1,0 +1,22 @@
+services:
+  - type: worker
+    name: dragon-bot
+    runtime: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    disk:
+      name: dragon-bot-auth
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: AUTH_DIR
+        value: /var/data/auth
+      - key: DB_PATH
+        value: /var/data/database.json
+      - key: BOT_PREFIX
+        value: "_"
+      - key: PAIRING_PHONE
+        sync: false
