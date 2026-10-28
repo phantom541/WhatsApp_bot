@@ -111,4 +111,40 @@ async function start() {
   });
 }
 
-start().catch(error => console.error('Bot startup failed:', error));
+start().catch(error => console.error('Bot startup failed:', error));    // Wait until WhatsApp supplies its initial QR challenge before requesting
+    // a phone-number pairing code. A fixed startup timeout races the socket.
+    sock.ev.on('connection.update', async ({ qr, connection }) => {
+      if (!qr || connection === 'close' || closed || pairingRequested || state.creds.registered) return;
+      pairingRequested = true;
+      try {
+        const code = await sock.requestPairingCode(pairingPhone);
+        if (!closed) {
+          console.log('WhatsApp pairing code: ' + code);
+          console.log('On WhatsApp: Linked devices > Link a device > Link with phone number instead.');
+        }
+      } catch (error) {
+        console.error('Could not request pairing code:', error?.message || error);
+      }
+    });  sock.ev.on('connection.update', ({ connection, lastDisconnect }) => {
+    if (connection === 'open') {
+      reconnectAttempts = 0;
+      console.log('🐉 Dragon Bot connected.');
+    }
+    if (connection === 'close') {
+      closed = true;
+      if (activeSocket !== sock) return;
+      activeSocket = null;
+      const code = lastDisconnect?.error?.output?.statusCode;
+      if (code === DisconnectReason.loggedOut || code === DisconnectReason.badSession) {
+        console.error('WhatsApp session was rejected (status ' + code + '). Manual pairing is required. Saved credentials will NOT be deleted.');
+        console.error('If this is a first-time setup, stop the bot, back up auth/, then pair again.');
+        return;
+      }
+      if (code === DisconnectReason.connectionReplaced) {
+        console.error('WhatsApp connection replaced by another client. Stopping to avoid conflicting sessions.');
+        return;
+      }
+      console.error('WhatsApp connection closed (status ' + (code ?? 'unknown') + ').');
+      scheduleReconnect();
+    }
+  });
