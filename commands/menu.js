@@ -43,7 +43,7 @@ export default {
    ['🎮 *PHANTOM ARCADE*',[
     [c('trivia'),'Dragon trivia mini-game'],
     [c('pvp challenge'),'Challenge a rider (reply to them)']]],
-   ['💎 *REWARDS & LEGACY*',[
+   ['🌊 *THE SEVEN EYES*',[\n    [c('eyes'),'Seven Eyes collection and Colossal progress']],\n   ['💎 *REWARDS & LEGACY*',[
     [c('daily'),'Claim daily coins'],
     [c('quests'),'Daily challenges'],
     [c('achievements'),'Milestones & rewards'],
