@@ -33,12 +33,17 @@ export default {
         [c('dragon 1'), 'Inspect by collection number'],
         [c('species'), 'Browse the bestiary'],
         [c('types'), 'View elemental type matchups'],
+        [c('classes'), 'Browse dragon classes'],
         [c('party'), 'View your six-dragon party'],
         [c('den'), 'Stored dragons'],
         [c('moves'), 'Inspect dragon moves'],
         [c('evolve'), 'Evolve an eligible dragon'],
         [c('transfer'), 'Move dragons between party and den'],
-        [c('rest'), 'Recover your team']
+        [c('rest'), 'Recover your team'],
+        [c('heal'), 'Heal a dragon or your team'],
+        [c('recruit'), 'Recruit a dragon into your party'],
+        [c('swap'), 'Swap party positions'],
+        [c('prepare'), 'Prepare for an expedition']
       ]],
       ['⚔️ *THE HUNTING GROUNDS*', [
         [c('hunt'), 'Seek wild dragons'],
@@ -48,6 +53,10 @@ export default {
         [c('battlefight 1'), 'Use a battle move'],
         [c('flee'), 'Flee from battle'],
         [c('colossus'), 'Check Colossal Beasts']
+      ]],
+      ['🧭 *REALMS & TRAVEL*', [
+        [c('regions'), 'Discover regions'],
+        [c('travel'), 'Travel between unlocked regions']
       ]],
       ['🌀 *THE SIX FORBIDDEN GATES*', [
         [c('dungeons'), 'Discover dungeon gates'],
@@ -71,6 +80,7 @@ export default {
       ['🛒 *TRADER’S OUTPOST*', [
         [c('mart'), 'Supplies and evolution stones'],
         [c('shop'), 'Battle charms'],
+        [c('equipcharm'), 'Equip a battle charm'],
         [c('buy'), 'Purchase an item'],
         [c('bag'), 'Your inventory'],
         [c('use'), 'Use an item']
