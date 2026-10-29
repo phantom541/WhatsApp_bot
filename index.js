@@ -8,10 +8,13 @@ import { createInterface } from 'node:readline/promises';
 import { stdin, stdout } from 'node:process';
 import { config } from './config.js';
 import { handleMessage } from './handlers/commands.js';
+import { updateDatabase } from './lib/database.js';
+import { expireWorld } from './lib/world-events.js';
 
 const logger = pino({ level: 'silent' });
 let currentSocket;
 let reconnectTimer;
+let worldMaintenanceTimer;
 let pairingPhone = String(process.env.PAIRING_PHONE || '').replace(/\D/g, '');
 
 async function getPairingPhone() {
@@ -46,6 +49,24 @@ function scheduleReconnect() {
       scheduleReconnect();
     });
   }, 3000);
+}
+
+function startWorldMaintenance(sock) {
+  if (worldMaintenanceTimer) return;
+  worldMaintenanceTimer = setInterval(async () => {
+    if (currentSocket !== sock) return;
+    try {
+      const events = await updateDatabase(db => expireWorld(db));
+      for (const event of events) {
+        if (event.group?.endsWith('@g.us')) {
+          await sock.sendMessage(event.group, { text: event.text });
+        }
+      }
+    } catch (error) {
+      console.error('Group world-event maintenance failed:', error?.message || error);
+    }
+  }, 15000);
+  worldMaintenanceTimer.unref?.();
 }
 
 async function start() {
@@ -86,10 +107,15 @@ async function start() {
     if (connection === 'open') {
       console.log('🐉 Dragon Bot connected using saved WhatsApp linked-device credentials.');
       console.log('Command prefix:', JSON.stringify(config.prefix));
+      startWorldMaintenance(sock);
     }
 
     if (connection === 'close') {
       closed = true;
+      if (worldMaintenanceTimer) {
+        clearInterval(worldMaintenanceTimer);
+        worldMaintenanceTimer = undefined;
+      }
       const code = statusCode(lastDisconnect?.error);
       console.error('WhatsApp connection closed:', code, lastDisconnect?.error?.message || '');
       if (currentSocket === sock) currentSocket = undefined;
