@@ -9,7 +9,7 @@ export function lookupDragon(player,query){
  const number=/^#?\d+$/.test(input)?Number(input):null;
  const matches=number===null?player.dragons.map((d,i)=>({d,i})).filter(({d})=>normalizeDragonName(d.species)===normalizeDragonName(input)||(normalizeDragonName(input)==='redfurry'&&normalizeDragonName(d.species)==='redfury')):null;
  const collectionNumber=/^(?:owned|collection)\s+#?(\d+)$/i.exec(input)?.[1];
- const owned=collectionNumber? (Number(collectionNumber)>=1&&Number(collectionNumber)<=player.dragons.length?{d:player.dragons[Number(collectionNumber)-1],i:Number(collectionNumber)-1}:null):number!==null?null:matches?.[0];
+ const owned=collectionNumber? (Number(collectionNumber)>=1&&Number(collectionNumber)<=player.dragons.length?{d:player.dragons[Number(collectionNumber)-1],i:Number(collectionNumber)-1}:null):number!==null?(number>=1&&number<=player.dragons.length?{d:player.dragons[number-1],i:number-1}:null):matches?.[0];
  const species=owned?dragonSpeciesInfo(owned.d.species):(number!==null?dragonSpeciesById(number):collectionNumber?null:dragonSpeciesInfo(input));
  if(!owned&&!species)return {error:'Dragon not found in your collection or the bestiary.'};
  const d=owned?.d;
