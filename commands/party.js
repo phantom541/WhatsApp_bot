@@ -43,7 +43,7 @@ export default {
 
     const requested = String(args[0] ?? '').trim();
     if (requested) {
-      if (!/^\\d+$/.test(requested)) return reply('Usage: ' + prefix + 'party <1-6>');
+      if (!/^\d+$/.test(requested)) return reply('Usage: ' + prefix + 'party <1-6>');
       const slot = Number(requested);
       if (slot < 1 || slot > 6) return reply('Choose a party slot from 1 to 6.');
       const id = p.party[slot - 1];
