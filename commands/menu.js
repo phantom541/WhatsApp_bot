@@ -32,6 +32,7 @@ export default {
         [c('dragons'), 'View your collection'],
         [c('dragon 1'), 'Inspect by collection number'],
         [c('species'), 'Browse the bestiary'],
+        [c('types'), 'View elemental type matchups'],
         [c('party'), 'View your six-dragon party'],
         [c('den'), 'Stored dragons'],
         [c('moves'), 'Inspect dragon moves'],
