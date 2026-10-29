@@ -81,8 +81,19 @@ export async function handleMessage(sock, message) {
   const command = commands.get(name?.toLowerCase());
   if (!command && !['hunt', 'spawn', 'battle'].includes(name?.toLowerCase())) return;
   const jid = message.key.remoteJid;
-  const sender = message.key.participant || jid;
   const phone=phoneFromMessage(message);
+  let sender = message.key.participant || jid;
+  // WhatsApp may identify the same person with a LID in groups and a phone JID in DMs.
+  // Reuse an existing profile by its stored phone number instead of creating a second rider.
+  if (phone) {
+    const identityDb = await readDatabase();
+    if (!identityDb.players?.[sender]) {
+      const existing = Object.entries(identityDb.players || {}).find(([, player]) =>
+        String(player.phoneNumber || '').replace(/\D/g, '') === phone
+      );
+      if (existing) sender = existing[0];
+    }
+  }
   const reply = text => sock.sendMessage(jid, { text }, { quoted: message });
   try {
     if(jid?.endsWith('@g.us'))await updateDatabase(data=>{data.worldEvents ||= {spawns:{},battles:{},lastColossusAt:0};data.worldEvents.knownGroups ||= {};data.worldEvents.knownGroups[jid]=true});
