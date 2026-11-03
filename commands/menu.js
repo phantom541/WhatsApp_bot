@@ -1,6 +1,12 @@
 import {readDatabase} from '../lib/database.js';
 import {riderRank} from '../lib/rider-progression.js';
 import {activeTitle} from '../lib/achievements.js';
+import {readFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import {dirname,join} from 'node:path';
+import sharp from 'sharp';
+
+const MENU_IMAGE = join(dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'menu', 'ghost-mascot.svg');
 
 const line = '━━━━━━━━━━━━━━━━━━━━';
 const safe = value => String(value || 'Dragon Rider').replace(/[\r\n*_~`]/g, '').slice(0, 28);
@@ -8,7 +14,7 @@ const safe = value => String(value || 'Dragon Rider').replace(/[\r\n*_~`]/g, '')
 export default {
   name: 'menu',
   description: 'Open the Dragon Fall command console',
-  async execute({sender, reply, prefix}) {
+  async execute({sender, reply, prefix, sock, message}) {
     const p = (await readDatabase()).players?.[sender];
     const c = name => prefix + name;
     const header = [
