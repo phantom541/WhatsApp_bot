@@ -103,6 +103,14 @@ export default {
       title,
       ...entries.map(([command, description]) => '│ ' + command + '\n╰─ ' + description)
     ]);
-    return reply([...header, ...body, '', line, '_The fire is not to be feared. It is to be wielded._', '🐉 *DRAGON FALL • END TRANSMISSION*'].join('\n'));
+    const caption = [...header, ...body, '', line, '_The fire is not to be feared. It is to be wielded._', '🐉 *DRAGON FALL • END TRANSMISSION*'].join('\n');
+    try {
+      const source = await readFile(MENU_IMAGE);
+      const image = await sharp(source).png().toBuffer();
+      return sock.sendMessage(message.key.remoteJid, { image, caption }, { quoted: message });
+    } catch (error) {
+      console.error('Menu mascot image unavailable:', error?.message || error);
+      return reply(caption);
+    }
   }
 };
