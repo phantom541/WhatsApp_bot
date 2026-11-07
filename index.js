@@ -88,20 +88,28 @@ async function start() {
   let pairingRequested = false;
   let closed = false;
 
-  sock.ev.on('connection.update', async ({ connection, qr, lastDisconnect }) => {
+  async function requestPhonePairingCode() {
+    if (closed || currentSocket !== sock || state.creds.registered || !phone || pairingRequested) return;
+    pairingRequested = true;
+    try {
+      const code = await sock.requestPairingCode(phone);
+      if (!closed && currentSocket === sock) {
+        console.log('WhatsApp phone-number pairing code: ' + code);
+        console.log('On your phone: WhatsApp > Linked devices > Link a device > Link with phone number instead.');
+      }
+    } catch (error) {
+      pairingRequested = false;
+      console.error('Phone-number pairing request failed:', error?.message || error);
+    }
+  }
+
+  sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
     if (closed || currentSocket !== sock) return;
 
-    if (qr && !state.creds.registered && phone && !pairingRequested) {
-      pairingRequested = true;
-      try {
-        const code = await sock.requestPairingCode(phone);
-        if (!closed) {
-          console.log('WhatsApp phone-number pairing code: ' + code);
-          console.log('On your phone: WhatsApp > Linked devices > Link a device > Link with phone number instead.');
-        }
-      } catch (error) {
-        console.error('Phone-number pairing request failed:', error?.message || error);
-      }
+    // Request a pairing code as soon as the socket starts connecting. Do not
+    // depend on a QR event, because this setup is intended for phone-number linking.
+    if (connection === 'connecting') {
+      await requestPhonePairingCode();
     }
 
     if (connection === 'open') {
