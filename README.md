@@ -18,48 +18,52 @@ Combat and progression, multiplayer, world events, and endgame systems.
 
 **Security:** Never commit WhatsApp session credentials or private player data.
 
-## Temporary Android hosting with Termux
+## Run on Android with Termux (phone-number pairing)
 
-Install Termux from F-Droid or its official GitHub releases. Use Node.js 20 or newer.
+This setup uses WhatsApp's **Link with phone number** flow. It does not require scanning a QR code.
+
+Install Termux from F-Droid or its official GitHub releases, then run:
 
 ```sh
 pkg update && pkg upgrade
-pkg install git nodejs
+pkg install git nodejs-lts
 git clone https://github.com/phantom541/WhatsApp_bot.git
 cd WhatsApp_bot
 npm install
+bash start.sh
 ```
 
-### Pair using the phone number (recommended for one-phone setup)
+The launcher asks for:
+- Your WhatsApp number in international format, digits only (Botswana numbers begin with `267`).
+- Your Creator number. Press Enter to use the same number.
 
-In Termux, enter your own WhatsApp account number in international format (digits only, no plus sign). This number is **only for pairing** and is not automatically assigned Creator status.
+When the pairing code appears, open WhatsApp on the account you entered:
+**Settings > Linked devices > Link a device > Link with phone number instead**.
+Enter the code shown in Termux. Never share the pairing code with anyone.
 
-```sh
-export PAIRING_PHONE=267XXXXXXXX
-export BOT_OWNER_NUMBERS=267XXXXXXXX
-npm start
-```
-
-When Termux prints a pairing code, open WhatsApp **Linked devices > Link a device > Link with phone number instead** and enter it. The menu wording can vary by WhatsApp version. The phone number is not stored in the repository.
-
-If you prefer QR authentication, omit `PAIRING_PHONE` and run `npm start`. Scanning a QR displayed on the same phone may require another screen.
-
-After the first successful pairing, credentials are saved under `auth/`. For later launches:
+The first successful link saves the session in `auth/`. On later starts, run:
 
 ```sh
 cd ~/WhatsApp_bot
-export BOT_OWNER_NUMBERS=267XXXXXXXX
-npm start
+bash start.sh
 ```
 
-Keep Termux running in the foreground while using the bot. Android battery optimization may stop the process. You can use `termux-wake-lock` if supported, and `termux-wake-unlock` afterward. Press Ctrl+C to stop.
+The launcher asks for the numbers again, but the saved session is reused and a new code is not requested while the credentials remain registered. Keep the `auth/` and `data/` folders. Do not delete them to troubleshoot a connection.
+
+### Keep Termux running
+
+```sh
+termux-wake-lock
+bash start.sh
+```
+
+Keep Termux open and allow it to run in the background. Android battery optimization may stop it. Use `termux-wake-unlock` when you are finished.
 
 ### Troubleshooting
 
-- If `npm install` fails compiling a dependency, try `pkg install python make clang` and run `npm install` again. Some native dependencies may not support your Android architecture.
-- If the pairing code fails, confirm the number is correct and retry with a fresh code. Do not share pairing codes.
-- If WhatsApp says you are logged out, re-pair. Do not delete `auth/` unless you intentionally want to reset the session.
-- `BOT_OWNER_NUMBERS` defines the bot's Creator accounts. Only include numbers you control.
-- Keep `auth/`, `data/`, and any `.env` files private and backed up securely.
-- This is a temporary setup; Termux is not guaranteed to keep the bot running continuously.
-
+- If `npm install` fails on a native dependency, install build tools with `pkg install python make clang`, then retry `npm install`.
+- If pairing fails, check that the number includes the country code and is entered without spaces or a plus sign. Generate a fresh code by restarting the launcher.
+- If WhatsApp reports that the device was logged out, the saved session is preserved. Follow the phone-number pairing flow again; do not delete `auth/` automatically.
+- `BOT_OWNER_NUMBERS` controls Creator access. Only enter numbers you control.
+- Keep `auth/`, `data/`, and any `.env` files private. Never upload or send your `auth/` folder.
+- Termux is suitable for temporary hosting, but Android may stop background processes. It is not guaranteed to run continuously.
