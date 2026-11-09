@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "species": "Voltwing",
+    "slug": "voltwing",
+    "filename": "001-voltwing.webp"
+  },
+  {
+    "id": 2,
+    "species": "Voltmaw",
+    "slug": "voltmaw",
+    "filename": "002-voltmaw.webp"
+  },
+  {
+    "id": 3,
+    "species": "Voltclaw",
+    "slug": "voltclaw",
+    "filename": "003-voltclaw.webp"
+  },
+  {
+    "id": 4,
+    "species": "Voltscale",
+    "slug": "voltscale",
+    "filename": "004-voltscale.webp"
+  },
+  {
+    "id": 5,
+    "species": "Voltcrest",
+    "slug": "voltcrest",
+    "filename": "005-voltcrest.webp"
+  },
+  {
+    "id": 6,
+    "species": "Volttail",
+    "slug": "volttail",
+    "filename": "006-volttail.webp"
+  },
+  {
+    "id": 7,
+    "species": "Stormwing",
+    "slug": "stormwing",
+    "filename": "007-stormwing.webp"
+  },
+  {
+    "id": 8,
+    "species": "Stormmaw",
+    "slug": "stormmaw",
+    "filename": "008-stormmaw.webp"
+  },
+  {
+    "id": 9,
+    "species": "Stormclaw",
+    "slug": "stormclaw",
+    "filename": "009-stormclaw.webp"
+  },
+  {
+    "id": 10,
+    "species": "Stormscale",
+    "slug": "stormscale",
+    "filename": "010-stormscale.webp"
+  },
+  {
+    "id": 11,
+    "species": "Stormcrest",
+    "slug": "stormcrest",
+    "filename": "011-stormcrest.webp"
+  },
+  {
+    "id": 12,
+    "species": "Stormtail",
+    "slug": "stormtail",
+    "filename": "012-stormtail.webp"
+  },
+  {
+    "id": 13,
+    "species": "Flashwing",
+    "slug": "flashwing",
+    "filename": "013-flashwing.webp"
+  },
+  {
+    "id": 14,
+    "species": "Flashmaw",
+    "slug": "flashmaw",
+    "filename": "014-flashmaw.webp"
+  },
+  {
+    "id": 15,
+    "species": "Flashclaw",
+    "slug": "flashclaw",
+    "filename": "015-flashclaw.webp"
+  },
+  {
+    "id": 16,
+    "species": "Flashscale",
+    "slug": "flashscale",
+    "filename": "016-flashscale.webp"
+  },
+  {
+    "id": 17,
+    "species": "Flashcrest",
+    "slug": "flashcrest",
+    "filename": "017-flashcrest.webp"
+  },
+  {
+    "id": 18,
+    "species": "Flashtail",
+    "slug": "flashtail",
+    "filename": "018-flashtail.webp"
+  },
+  {
+    "id": 19,
+    "species": "Boltwing",
+    "slug": "boltwing",
+    "filename": "019-boltwing.webp"
+  },
+  {
+    "id": 20,
+    "species": "Boltmaw",
+    "slug": "boltmaw",
+    "filename": "020-boltmaw.webp"
+  }
+]
