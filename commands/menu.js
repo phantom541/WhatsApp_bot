@@ -1,12 +1,9 @@
 import {readDatabase} from '../lib/database.js';
 import {riderRank} from '../lib/rider-progression.js';
 import {activeTitle} from '../lib/achievements.js';
-import {readFile} from 'node:fs/promises';
-import {fileURLToPath} from 'node:url';
-import {dirname,join} from 'node:path';
 import sharp from 'sharp';
 
-const MENU_IMAGE = join(dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'menu', 'ghost-mascot.svg');
+const MENU_IMAGE = 'https://dragon-bot-images.vercel.app/assets/menu/ghost-mascot.svg';
 
 const line = '━━━━━━━━━━━━━━━━━━━━';
 const safe = value => String(value || 'Dragon Rider').replace(/[\r\n*_~`]/g, '').slice(0, 28);
@@ -105,7 +102,9 @@ export default {
     ]);
     const caption = [...header, ...body, '', line, '_The fire is not to be feared. It is to be wielded._', '🐉 *DRAGON FALL • END TRANSMISSION*'].join('\n');
     try {
-      const source = await readFile(MENU_IMAGE);
+      const response = await fetch(MENU_IMAGE);
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const source = Buffer.from(await response.arrayBuffer());
       const image = await sharp(source).png().toBuffer();
       return sock.sendMessage(message.key.remoteJid, { image, caption }, { quoted: message });
     } catch (error) {
