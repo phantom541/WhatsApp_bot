@@ -36,7 +36,7 @@ const sock={sendMessage:async(_,{text})=>{messages.push(text);}};
 
 test('setup test riders',async()=>{
  await updateDatabase(db=>{
-  for(const n of [creator,mod,player])db.players[jid(n)]={phoneNumber:n,whatsappName:'Test Rider',playerId:'Test_Rider#'+n.slice(-4),coins:10,level:1,xp:0,inventory:[],dragons:[]};
+  for(const n of [creator,mod,player])db.players[jid(n)]={phoneNumber:n,whatsappName:'Test Rider',playerId:'Test_Rider#'+n.slice(-4),coins:n===mod?100010:10,level:1,xp:0,inventory:[],dragons:[]};
  });
  const db=await readDatabase();
  assert.equal(roleOf(db,creator),'creator');
@@ -69,7 +69,13 @@ test('bot pauses player commands, staff can turn it on',async()=>{
 });
 test('staff can spawn a chosen species and claim daily rewards',async()=>{
  assert.match(await execute(staffspawn,mod,['skrill']),/Skrill/);
- assert.equal((await readDatabase()).players[jid(mod)].activeEncounter.species,'Skrill');
+ const afterSpawn=(await readDatabase()).players[jid(mod)];
+ assert.equal(afterSpawn.activeEncounter.species,'Skrill');
+ assert.equal(afterSpawn.coins,10,'spawn fee must come from pouch');
+ assert.match(await execute(staffspawn,creator,['skrill']),/Not enough coins in your pouch/);
+ const creatorAfter=(await readDatabase()).players[jid(creator)];
+ assert.equal(creatorAfter.coins,10,'failed spawn must not deduct coins');
+ assert.equal(creatorAfter.activeEncounter,undefined);
  assert.match(await execute(daily,mod,[],jid(mod)),/65/);
  assert.match(await execute(daily,mod,[],jid(mod)),/Already claimed/);
 });
