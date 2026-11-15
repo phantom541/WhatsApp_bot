@@ -70,3 +70,9 @@ XP scales with enemy level. Defeat grants a smaller XP award. Each dragon has si
 - _regions shows the seven random hunting locations.
 - _spawn creates an extra personal wild encounter, with a separate five-minute cooldown.
 - Moves remain permanently replaceable only through the established level milestones, not through training items.
+
+
+## Dragon spawn fee
+- `_spawn` and named staff spawns (`_staffspawn` / `_spawn <dragon-name>`) cost 100,000 coins per spawn.
+- The fee is deducted from the spawning player's pouch (`coins`) only. The bank is never accessed.
+- If the pouch has less than 100,000 coins, spawning is rejected and no coins are deducted.
