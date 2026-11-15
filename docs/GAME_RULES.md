@@ -10,6 +10,6 @@ Names can be written with hyphens or spaces for preview, and with hyphens for co
 
 A player may claim only one free starter. Starter dragons are permanently marked `isStarter: true` and `tradable: false`, with their ID stored as `starterDragonId` on the player. Trading must reject these dragons even if a player attempts to rename them or manipulate trade commands. The helper `isDragonTradable` exists for future trading implementation, but trading is not yet built.
 
-Without a dragon, players cannot battle, spawn, or hunt; they are directed to `_starthunt`. Existing players with dragons retain them. Legacy starters acquired before these flags were introduced should be identified using player starter history / `starterDragonId` when trading is built.
+Without a dragon, players cannot battle, spawn, or hunt; they are directed to `_starthunt`. Existing players with dragons retain them. Every dragon spawn costs 100,000 coins, deducted only from the spawning player's pouch (`coins`). The bank is never touched. If the pouch balance is insufficient, the spawn is rejected without charging anything. Legacy starters acquired before these flags were introduced should be identified using player starter history / `starterDragonId` when trading is built.
 
 This is an unofficial fan project inspired by How to Train Your Dragon.
