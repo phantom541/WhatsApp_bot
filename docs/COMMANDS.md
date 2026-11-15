@@ -73,6 +73,6 @@ XP scales with enemy level. Defeat grants a smaller XP award. Each dragon has si
 
 
 ## Dragon spawn fee
-- `_spawn` and named staff spawns (`_staffspawn` / `_spawn <dragon-name>`) cost 100,000 coins per spawn.
+- `_spawn` and named staff spawns (`_staffspawn` / `_spawn <dragon-name>`) cost 10,000 coins per spawn.
 - The fee is deducted from the spawning player's pouch (`coins`) only. The bank is never accessed.
-- If the pouch has less than 100,000 coins, spawning is rejected and no coins are deducted.
+- If the pouch has less than 10,000 coins, spawning is rejected and no coins are deducted.
