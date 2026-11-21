@@ -1,20 +1,13 @@
 # Dragon artwork library
 
-This folder is the public image library for dragon species artwork.
+Dragon artwork is stored in the repository under `assets/` and `public/assets/`.
 
-## File naming
+## Dragon files
+Use the bot's bestiary number and lowercase species slug, for example:
+`001-voltwing.webp`, `002-voltmaw.webp`.
 
-Use the bot's bestiary number and lowercase species slug:
+Supported formats: `.webp`, `.png`, `.jpg`, or `.jpeg`.
+Keep one image per dragon and use artwork you have permission to use.
 
-`001-voltwing.webp`, `002-voltmaw.webp`, and so on.
-
-Supported image formats for the bot integration: `.webp`, `.png`, `.jpg`, or `.jpeg`.
-Use one image per dragon. Keep the original artwork you have permission to use.
-
-## Upload batches
-
-Upload 20 images at a time, keeping the three-digit bestiary number at the start of each filename. The public URL will be:
-
-`https://dragon-bot-images.vercel.app/assets/dragons/FILENAME`
-
-The first 20 entries are listed in `manifest-001-020.json`.
+## Hosting
+The bot should load bundled artwork from the repository or its deployment filesystem. No separate Vercel image-hosting project or remote image URL is required.
