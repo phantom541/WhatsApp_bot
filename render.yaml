@@ -18,5 +18,7 @@ services:
         value: /var/data/database.json
       - key: BOT_PREFIX
         value: "_"
+      - key: IMAGE_API_KEY
+        sync: false
       - key: PAIRING_PHONE
         sync: false

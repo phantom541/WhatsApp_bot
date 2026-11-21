@@ -4,6 +4,12 @@ WhatsApp dragon RPG built with JavaScript and Baileys.
 
 Development happens on the `main` branch. We will implement the project in phases, testing each stage before moving to the next.
 
+## WhatsApp image processing
+
+Deploy `api/image.js` to the existing Vercel project. Set the same random secret (at least 32 bytes) as `IMAGE_API_KEY` in Vercel Production and on the bot host, then redeploy both. Do not commit it. The worker defaults to `https://whatsappbot-steel.vercel.app/api/image`; override `IMAGE_API_URL` only for a trusted HTTPS deployment.
+
+Caption a photo, or reply to one, with `_image compress`, `_image thumbnail`, or `_image grayscale` (substitute your configured prefix). The command sends that photo to the API and returns a JPEG in the same chat. Photos are processed in memory, not stored by the API. `POST /api/image?mode=thumbnail` accepts raw JPEG, PNG, or WebP bytes with the matching `Content-Type` and `Authorization: Bearer <secret>`. Maximum input: 4 MiB and 24 megapixels. Thumbnails fit within 320 pixels; other modes fit within 1600 pixels. Aspect ratio is preserved.
+
 ## Phase 1
 
 - WhatsApp connection and authentication
