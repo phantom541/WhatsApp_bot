@@ -10,6 +10,7 @@ import achievements from '../commands/achievements.js';
 import titles from '../commands/titles.js';
 import trivia from '../commands/trivia.js';
 import ping from '../commands/ping.js';
+import bot from '../commands/bot.js';
 import menu from '../commands/menu.js';
 import register from '../commands/register.js';
 import profile from '../commands/profile.js';
@@ -72,7 +73,7 @@ import eyes from '../commands/eyes.js';
 import grantEye from '../commands/grant-eye.js';
 import { requireStarter } from '../lib/eligibility.js';
 import { config } from '../config.js';
-const commands = new Map([group, join, leave, achievements, titles, trivia, pvp, colossus, species, types, leaderboard, ping, menu, register, profile, starter, dragons, dragon, classes, dungeons, dungeon, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel, eyes, grantEye].map(c => [c.name, c]));
+const commands = new Map([group, join, leave, achievements, titles, trivia, pvp, colossus, species, types, leaderboard, ping, bot, menu, register, profile, starter, dragons, dragon, classes, dungeons, dungeon, starthunt, starterdrgon, hunt, battle, flee, rest, heal, catchDragon, battlefight, recruit, swap, bag, moves, replacemove, mart, shop, buy, equipcharm, use, prepare, regions, travel, evolve, party, den, transfer, spawn, daily, staff, quests, claimquest, ban, unban, botmode, grant, staffspawn, staffperks, stafflog, grantitem, staffheal, resetcooldown, setcoins, staffdragon, inspectrider, forgedragon, setdragonlevel, eyes, grantEye].map(c => [c.name, c]));
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
