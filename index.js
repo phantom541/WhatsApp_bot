@@ -113,7 +113,7 @@ async function start() {
     }
 
     if (connection === 'open') {
-      console.log('🐉 Dragon Bot connected using saved WhatsApp linked-device credentials.');
+      console.log('🤖 COCO connected using saved WhatsApp linked-device credentials.');
       console.log('Command prefix:', JSON.stringify(config.prefix));
       startWorldMaintenance(sock);
     }
