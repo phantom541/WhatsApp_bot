@@ -1,5 +1,10 @@
 # Commands
 
+Bot name: **COCO**.
+
+- `/Bot` introduces the bot: `Hi my name is coco`.
+- `_bot` is also accepted when using the default command prefix.
+
 Default prefix: `_` (change using `BOT_PREFIX`).
 
 - `_ping` checks connectivity.
