@@ -77,8 +77,10 @@ const commands = new Map([group, join, leave, achievements, titles, trivia, pvp,
 export async function handleMessage(sock, message) {
   const content = message.message?.ephemeralMessage?.message || message.message;
   const text = content?.conversation || content?.extendedTextMessage?.text || '';
-  if (!text.startsWith(config.prefix)) return;
-  const [name, ...args] = text.slice(config.prefix.length).trim().split(/\s+/);
+  const botAlias = /^\/bot(?:\s|$)/i.test(text);
+  if (!text.startsWith(config.prefix) && !botAlias) return;
+  const commandText = botAlias ? text.slice(1) : text.slice(config.prefix.length);
+  const [name, ...args] = commandText.trim().split(/\s+/);
   const command = commands.get(name?.toLowerCase());
   if (!command && !['hunt', 'spawn', 'battle'].includes(name?.toLowerCase())) return;
   const jid = message.key.remoteJid;
