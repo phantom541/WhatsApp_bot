@@ -59,8 +59,7 @@ export default {
       const active = p.activeDragonId === d.id ? ' ⭐ *ACTIVE*' : '';
       const maxHp = Math.max(1, Number(d.maxHp ?? d.hp ?? 1));
       return [
-        '*' + (i + 1) + '. ' + safe(d.species) + '*' + active,
-        '🏹 Level: ' + (Number(d.level) || 1),
+        '*' + (i + 1) + '. ' + safe(d.species) + '* 〔Lv. ' + (Number(d.level) || 1) + '〕' + active,
         '⚡ XP: ' + (Number(d.xp) || 0),
         '🔋 HP: ' + (Number(d.hp) || 0) + ' / ' + maxHp,
         '♻️ State: ' + hpState(d)
