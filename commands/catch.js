@@ -7,7 +7,7 @@ import {createCapturedDragon} from '../lib/dragon-factory.js';
 import {addDragon,activeDragon} from '../lib/collection.js';
 import {winXp,awardXp} from '../lib/progression.js';
 import {groupId,world,claimEncounter,beginBattle,endBattle,touchBattle} from '../lib/world-events.js';
-import {battleStartedText,battleMentions} from '../lib/battle-announcement.js';
+import {battleStartedText} from '../lib/battle-announcement.js';
 export default {name:'catch',requiresStarter:true,description:'Catch or battle a wild dragon',async execute({sender,reply,args,prefix,message,sock}){
  const name=args.join(' ').trim(),group=groupId(message.key.remoteJid);
  const r=await updateDatabase(db=>{const p=db.players[sender];let e=p.activeEncounter;if(group){const claim=claimEncounter(db,group,sender);if(claim.error)return {error:claim.error};e=claim.encounter;if(!p.activeEncounter||p.activeEncounter.id!==e.id)p.activeEncounter={...e};}
